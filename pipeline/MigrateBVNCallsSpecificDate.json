@@ -1,0 +1,199 @@
+{
+	"name": "MigrateBVNCallsSpecificDate",
+	"properties": {
+		"activities": [
+			{
+				"name": "var_CallDate",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "vCallDate",
+					"value": {
+						"value": "@pipeline().parameters.CallDate",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "GetBVNCalls",
+				"type": "Lookup",
+				"dependsOn": [
+					{
+						"activity": "var_CallDate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "0.00:05:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "SqlServerSource",
+						"sqlReaderStoredProcedureName": "[dbo].[prc_get_GMBEnterPriseBVNCallBack]",
+						"storedProcedureParameters": {
+							"calldate": {
+								"type": "DateTime",
+								"value": {
+									"value": "@variables('vCallDate')",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "02:00:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_Dynamic_CRM",
+						"type": "DatasetReference",
+						"parameters": {
+							"ds_db_param": "venus"
+						}
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "MigrateBVNCalls",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "GetBVNCalls",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('GetBVNCalls').output.value",
+						"type": "Expression"
+					},
+					"isSequential": true,
+					"activities": [
+						{
+							"name": "MigrateToNewSchema-bvncalls",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.00:05:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[prc_migrate_bvncalls]",
+								"storedProcedureParameters": {
+									"callernumber": {
+										"value": {
+											"value": "@item().callernumber",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"callstatus": {
+										"value": {
+											"value": "@item().bvncallstatus",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"duration": {
+										"value": {
+											"value": "@item().duration",
+											"type": "Expression"
+										},
+										"type": "TimeSpan"
+									},
+									"provider": {
+										"value": "Knowlarity",
+										"type": "String"
+									},
+									"recordingurl": {
+										"value": {
+											"value": "@item().recordingurl",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"rowid": {
+										"value": {
+											"value": "@item().rowid",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"starttime": {
+										"value": {
+											"value": "@item().starttime",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									},
+									"virtualnumber": {
+										"value": {
+											"value": "@item().virtualnumber",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"agentnumber": {
+										"value": {
+											"value": "@item().agentnumber",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"calltype": {
+										"value": {
+											"value": "@item().calltype",
+											"type": "Expression"
+										},
+										"type": "String"
+									},
+									"actualcrdate": {
+										"value": {
+											"value": "@item().crdate",
+											"type": "Expression"
+										},
+										"type": "Datetime"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LNKYPAzure",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"CallDate": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"vCallDate": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "YP/ProManage"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-22T07:00:20Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

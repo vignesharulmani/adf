@@ -1,0 +1,16 @@
+{
+	"name": "DS_Dynamic_YP_Unencrypt",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LNKYPAzure_Unencrypt",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "YP"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

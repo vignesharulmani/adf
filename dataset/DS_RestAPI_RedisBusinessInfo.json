@@ -1,0 +1,31 @@
+{
+	"name": "DS_RestAPI_RedisBusinessInfo",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LNK_RestAPI_RedisBusinessInfo",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"BusinessId": "10204462"
+			}
+		},
+		"parameters": {
+			"BusinessId": {
+				"type": "string",
+				"defaultValue": "10204462"
+			}
+		},
+		"folder": {
+			"name": "YP"
+		},
+		"annotations": [],
+		"type": "RestResource",
+		"typeProperties": {
+			"relativeUrl": {
+				"value": "@concat('?BusinessId=',dataset().BusinessId)",
+				"type": "Expression"
+			}
+		},
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

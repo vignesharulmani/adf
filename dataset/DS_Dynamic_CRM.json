@@ -1,0 +1,27 @@
+{
+	"name": "DS_Dynamic_CRM",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LNKCRM_Dynamic",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"dbname": {
+					"value": "@dataset().ds_db_param",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"ds_db_param": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "CRM"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

@@ -1,0 +1,35 @@
+{
+	"name": "PrepareDashboardForSuperAdmin",
+	"properties": {
+		"description": "This PL is used to populate specific customer promanage dashboard data for superadmin users.",
+		"activities": [
+			{
+				"name": "Populate UserBusinessMapping",
+				"description": "This component is used to populate data into this table - userbusinessmapping via this proc - prc_prepare_promanagedashboard_superadmin",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:05:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[prc_prepare_promanagedashboard_superadmin]"
+				},
+				"linkedServiceName": {
+					"referenceName": "LNKYPAzure",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "YP/ProManage"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-21T06:04:19Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

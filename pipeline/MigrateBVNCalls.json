@@ -1,0 +1,57 @@
+{
+	"name": "MigrateBVNCalls",
+	"properties": {
+		"activities": [
+			{
+				"name": "var_CallDate",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "VCallDate",
+					"value": {
+						"value": "@adddays(utcnow(),-4)",
+						"type": "Expression"
+					}
+				}
+			},
+			{
+				"name": "MigrateBVNCallsSpecficDate",
+				"type": "ExecutePipeline",
+				"dependsOn": [
+					{
+						"activity": "var_CallDate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"pipeline": {
+						"referenceName": "MigrateBVNCallsSpecificDate",
+						"type": "PipelineReference"
+					},
+					"waitOnCompletion": true,
+					"parameters": {
+						"CallDate": {
+							"value": "@variables('VCallDate')",
+							"type": "Expression"
+						}
+					}
+				}
+			}
+		],
+		"variables": {
+			"VCallDate": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "YP/ProManage"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-22T05:22:24Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

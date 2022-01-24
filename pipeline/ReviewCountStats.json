@@ -1,0 +1,35 @@
+{
+	"name": "ReviewCountStats",
+	"properties": {
+		"description": "This PL is used to update review count stats.\n",
+		"activities": [
+			{
+				"name": "ReviewCountUpdate",
+				"description": "This component is used to execute this proc:prc_dailyschedulereviewcountupdate",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[prc_dailyschedulereviewcountupdate]"
+				},
+				"linkedServiceName": {
+					"referenceName": "LNKYPAzure",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "YP/Stats"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-06T12:11:17Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

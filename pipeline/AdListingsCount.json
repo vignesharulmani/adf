@@ -1,0 +1,290 @@
+{
+	"name": "AdListingsCount",
+	"properties": {
+		"description": "This PL is used to refresh listings/customer/campaign/user adscount.",
+		"activities": [
+			{
+				"name": "var_dbnames",
+				"description": "",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "dbnames_array",
+					"value": [
+						"Ads_AP",
+						"Ads_BR",
+						"Ads_DL",
+						"Ads_GJ",
+						"Ads_KA",
+						"Ads_KL",
+						"Ads_MH",
+						"Ads_MP",
+						"Ads_OR",
+						"Ads_PB",
+						"Ads_RJ",
+						"Ads_TN",
+						"Ads_UP",
+						"Ads_WB"
+					]
+				}
+			},
+			{
+				"name": "Exec SP in Each DB",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "var_dbnames",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('dbnames_array')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Refresh AdsCount SP1",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[prc_mng_adscount_part1]"
+							},
+							"linkedServiceName": {
+								"referenceName": "LNKLSAds_Dynamic",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"param_dbname": {
+										"value": "@item()",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Refresh AdsCount SP2",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Refresh AdsCount SP1",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[prc_mng_adscount_Part3]"
+							},
+							"linkedServiceName": {
+								"referenceName": "LNKLSAds_Dynamic",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"param_dbname": {
+										"value": "@item()",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Refresh bhk Attribute AdsCount",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Refresh AdsCount SP2",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[Prc_mng_citysubcatareaseoattributeadscount_br_pt_re]"
+							},
+							"linkedServiceName": {
+								"referenceName": "LNKLSAds_Dynamic",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"param_dbname": {
+										"value": "@item()",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Refresh price Attribute Adscount",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Refresh bhk Attribute AdsCount",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[Prc_mng_citysubcatareaseoattributeadscount_pr_pt_re]"
+							},
+							"linkedServiceName": {
+								"referenceName": "LNKLSAds_Dynamic",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"param_dbname": {
+										"value": "@item()",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Refresh Other SEO Attribute Adscount",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Refresh price Attribute Adscount",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[Prc_mng_citysubcatareaseoattributeadscount_others_re]"
+							},
+							"linkedServiceName": {
+								"referenceName": "LNKLSAds_Dynamic",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"param_dbname": {
+										"value": "@item()",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Refresh bhk Attribute AdsCount Rental",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Refresh Other SEO Attribute Adscount",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[Prc_mng_citysubcatareaseoattributeadscount_br_pt_rn]"
+							},
+							"linkedServiceName": {
+								"referenceName": "LNKLSAds_Dynamic",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"param_dbname": {
+										"value": "@item()",
+										"type": "Expression"
+									}
+								}
+							}
+						},
+						{
+							"name": "Refresh price Attribute Adscount Rental",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Refresh bhk Attribute AdsCount Rental",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[Prc_mng_citysubcatareaseoattributeadscount_pr_pt_rn]"
+							},
+							"linkedServiceName": {
+								"referenceName": "LNKLSAds_Dynamic",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"param_dbname": {
+										"value": "@item()",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"dbnames_array": {
+				"type": "Array"
+			}
+		},
+		"folder": {
+			"name": "LsAds"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-10T12:24:39Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,127 @@
+{
+	"name": "LoadBVNMetricsSpecificDate",
+	"properties": {
+		"description": "This PL is used to load bvn callstatus metrics in businessmetrics table.",
+		"activities": [
+			{
+				"name": "Get Customers",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[prc_get_promanagecustomers]",
+						"queryTimeout": "00:10:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_Dynamic_YP",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Load BVN Metrics For Each Customer",
+				"description": "This component is used to populate the bvn metrics data in businessmetrics using  the proc - prc_load_bvn_metrics",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Customers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					},
+					{
+						"activity": "var_insightdate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Customers').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "InsertBVNMetrics",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.00:10:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[prc_load_bvn_metrics]",
+								"storedProcedureParameters": {
+									"customerid": {
+										"value": {
+											"value": "@item().customerid",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"insightdate": {
+										"value": {
+											"value": "@variables('vInsightDate')",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LNKYPAzure",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			},
+			{
+				"name": "var_insightdate",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "vInsightDate",
+					"value": {
+						"value": "@pipeline().parameters.pInsightDate",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"parameters": {
+			"pInsightDate": {
+				"type": "string"
+			}
+		},
+		"variables": {
+			"vInsightDate": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "YP/ProManage"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-24T10:24:43Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

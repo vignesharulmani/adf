@@ -1,0 +1,35 @@
+{
+	"name": "FixBusinessScore",
+	"properties": {
+		"description": "This PL is used to resolve zero & mismatch businessscore",
+		"activities": [
+			{
+				"name": "ScoreResolver",
+				"description": "This component is used to execute this procedure - prc_businessscore_resolver",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[prc_businessscore_resolver]"
+				},
+				"linkedServiceName": {
+					"referenceName": "LNKYPAzure",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "YP/Resolver"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-06T12:05:16Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

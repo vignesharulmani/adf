@@ -1,0 +1,68 @@
+{
+	"name": "InitiateInsightCollection",
+	"properties": {
+		"description": "This PL is used to populate the data in this table - promanagecustomerinsights",
+		"activities": [
+			{
+				"name": "Initiate Insights",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [
+					{
+						"activity": "var_insightdate",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[prc_populate_promanagecustomerinsights]",
+					"storedProcedureParameters": {
+						"insightdate": {
+							"value": {
+								"value": "@variables('vInsightDate')",
+								"type": "Expression"
+							},
+							"type": "DateTime"
+						}
+					}
+				},
+				"linkedServiceName": {
+					"referenceName": "LNKYPAzure",
+					"type": "LinkedServiceReference"
+				}
+			},
+			{
+				"name": "var_insightdate",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "vInsightDate",
+					"value": {
+						"value": "@adddays(utcnow(),-4)",
+						"type": "Expression"
+					}
+				}
+			}
+		],
+		"variables": {
+			"vInsightDate": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "YP/ProManage"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-24T07:02:53Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,13 @@
+{
+	"name": "LNKYPAzure_Unencrypt",
+	"type": "Microsoft.DataFactory/factories/linkedservices",
+	"properties": {
+		"description": "This linked service should be used only for Data Flows",
+		"annotations": [],
+		"type": "AzureSqlDatabase",
+		"typeProperties": {
+			"connectionString": "integrated security=False;encrypt=True;connection timeout=30;data source=lslistings.database.windows.net;initial catalog=YP;user id=devadmin",
+			"encryptedCredential": "ew0KICAiVmVyc2lvbiI6ICIyMDE3LTExLTMwIiwNCiAgIlByb3RlY3Rpb25Nb2RlIjogIktleSIsDQogICJTZWNyZXRDb250ZW50VHlwZSI6ICJQbGFpbnRleHQiLA0KICAiQ3JlZGVudGlhbElkIjogIkRBVEFGQUNUT1JZQDRFMjFBMUI2LTc2RDctNEQ3OC1CQTVCLURGODBGQzg2RTk5Ml80YjNiYjhiYS0wMzkwLTQ3ODEtYTRjMS1hNDZjYmZiMDRlNTkiDQp9"
+		}
+	}
+}

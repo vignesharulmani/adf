@@ -1,0 +1,180 @@
+{
+	"name": "AutoAdExtension",
+	"properties": {
+		"activities": [
+			{
+				"name": "var_dbnames",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "dbnames_array",
+					"value": [
+						"Ads_TN"
+					]
+				}
+			},
+			{
+				"name": "GetCampaigns",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "var_dbnames",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('dbnames_array')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "AdExpireCampaigns",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[dbo].[prc_get_campaigns_adextension]",
+									"storedProcedureParameters": {
+										"duration": {
+											"type": "Int32",
+											"value": "1"
+										}
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "DS_Dynamic_LsAds",
+									"type": "DatasetReference",
+									"parameters": {
+										"ds_db_param": {
+											"value": "@item()",
+											"type": "Expression"
+										}
+									}
+								},
+								"firstRowOnly": false
+							}
+						},
+						{
+							"name": "var_campaigns_array",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "AdExpireCampaigns",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "campaigns_array",
+								"value": {
+									"value": "@array(activity('AdExpireCampaigns').output.value)",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "var_campaigns_commaseparate",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "var_campaigns_array",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "campaigns_commaseparate",
+								"value": {
+									"value": "@replace(replace(join(variables('campaigns_array'),','),'{\"campaignid\":',''),'}','')",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "ValidateCampaigns",
+							"type": "Lookup",
+							"dependsOn": [
+								{
+									"activity": "var_campaigns_commaseparate",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "0.00:05:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "SqlServerSource",
+									"sqlReaderStoredProcedureName": "[dbo].[prc_get_campaigns]",
+									"storedProcedureParameters": {
+										"validatecampaignids": {
+											"type": "String",
+											"value": {
+												"value": "@variables('campaigns_commaseparate')",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "DS_Dynamic_CRM",
+									"type": "DatasetReference",
+									"parameters": {
+										"ds_db_param": "venus"
+									}
+								},
+								"firstRowOnly": false
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"dbnames_array": {
+				"type": "Array"
+			},
+			"campaigns_array": {
+				"type": "Array"
+			},
+			"campaigns_commaseparate": {
+				"type": "String"
+			}
+		},
+		"folder": {
+			"name": "LsAds"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-22T07:02:36Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

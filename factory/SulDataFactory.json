@@ -1,0 +1,9 @@
+{
+	"name": "SulDataFactory",
+	"location": "eastus",
+	"identity": {
+		"type": "SystemAssigned",
+		"principalId": "7ce54f28-7757-4b05-a592-17db819769a3",
+		"tenantId": "453f0eb0-f553-4141-b377-de75359b3aa1"
+	}
+}

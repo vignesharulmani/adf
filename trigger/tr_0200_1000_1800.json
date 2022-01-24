@@ -1,0 +1,37 @@
+{
+	"name": "tr_0200_1000_1800",
+	"properties": {
+		"description": "Triggers @ every 8 hours - 02:00AM|10:00AM:06:00PM",
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "FixBusinessScore",
+					"type": "PipelineReference"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "ReviewCountStats",
+					"type": "PipelineReference"
+				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "AdListingsCount",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Hour",
+				"interval": 8,
+				"startTime": "2022-01-06T18:00:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}

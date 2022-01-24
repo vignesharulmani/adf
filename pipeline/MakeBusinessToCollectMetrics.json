@@ -1,0 +1,155 @@
+{
+	"name": "MakeBusinessToCollectMetrics",
+	"properties": {
+		"activities": [
+			{
+				"name": "Get Customers With Insight Date",
+				"type": "Lookup",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"source": {
+						"type": "AzureSqlSource",
+						"sqlReaderStoredProcedureName": "[dbo].[prc_get_promanagecustomerinsights]",
+						"storedProcedureParameters": {
+							"rowstofetch": {
+								"type": "Int32",
+								"value": {
+									"value": "@pipeline().parameters.rowstofetch",
+									"type": "Expression"
+								}
+							}
+						},
+						"queryTimeout": "00:10:00",
+						"partitionOption": "None"
+					},
+					"dataset": {
+						"referenceName": "DS_Dynamic_YP",
+						"type": "DatasetReference"
+					},
+					"firstRowOnly": false
+				}
+			},
+			{
+				"name": "Prepare Businesses To Collect Metrics",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Customers With Insight Date",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Customers With Insight Date').output.value",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Load Google Businesses",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.00:10:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[prc_load_promanagebusinessinsights]",
+								"storedProcedureParameters": {
+									"customerid": {
+										"value": {
+											"value": "@item().customerid",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"insightdate": {
+										"value": {
+											"value": "@item().insightdate",
+											"type": "Expression"
+										},
+										"type": "DateTime"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LNKYPAzure",
+								"type": "LinkedServiceReference"
+							}
+						},
+						{
+							"name": "Update Customer Status",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [
+								{
+									"activity": "Load Google Businesses",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[prc_update_promanagecustomerinsights]",
+								"storedProcedureParameters": {
+									"comments": {
+										"value": "BusinessPopulated",
+										"type": "String"
+									},
+									"contentid": {
+										"value": {
+											"value": "@item().contentid",
+											"type": "Expression"
+										},
+										"type": "Int32"
+									},
+									"isprocessed": {
+										"value": "1",
+										"type": "Int32"
+									}
+								}
+							},
+							"linkedServiceName": {
+								"referenceName": "LNKYPAzure",
+								"type": "LinkedServiceReference"
+							}
+						}
+					]
+				}
+			}
+		],
+		"parameters": {
+			"rowstofetch": {
+				"type": "int",
+				"defaultValue": 1000
+			}
+		},
+		"folder": {
+			"name": "YP/ProManage"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-12T13:29:33Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

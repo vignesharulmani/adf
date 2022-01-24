@@ -1,0 +1,32 @@
+{
+	"name": "TestRestAPI",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_RestAPI_RedisBusinessInfo",
+						"type": "DatasetReference"
+					},
+					"name": "RedisBusinessInfo"
+				}
+			],
+			"sinks": [
+				{
+					"linkedService": {
+						"referenceName": "LNKYPAzure_Unencrypt",
+						"type": "LinkedServiceReference"
+					},
+					"name": "CollectMetrics"
+				}
+			],
+			"transformations": [
+				{
+					"name": "UpsertRow"
+				}
+			],
+			"script": "parameters{\n\tBusinessId as integer (10572922)\n}\nsource(output(\n\t\tbody as (about as string, areaId as short, areaName as string, attributeTag as string, baseCityId as boolean, businessId as integer, businessName as string, businessUrl as string, certificateUrl as string, cityId as boolean, cityName as string, displayServices as string[], experience as short, hired as boolean, ibaApproved as boolean, infoAttributes as string[], isBusinessVerified as boolean, isLcfV2_GetQuotes as boolean, isoCertified as boolean, latitude as double, listingScore as double, lonLat as string, longitude as double, mobileNo as string, mode as short, needIds as short[], netSaleValue as double, photo as string, profilePic as string, rating as double, reviewCount as short, reviewCountInfo as string, reviewDescription as (businessId as integer, contributor as string, rating as double, reviewDate as string, reviewDescription as string, reviewId as integer)[], rowId as boolean, score as double, stdCode as short, subCategoryIds as short[], workingHours as ({_24HrsWorking} as boolean, businessId as integer, lunchHourFrom as string, lunchHourTo as string, workingDayFrom as short, workingDayTo as short, workingHourFrom as string, workingHourTo as string), zipCode as integer),\n\t\theaders as [string,string]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\thttpMethod: 'GET',\n\ttimeout: 30,\n\trequestInterval: 0,\n\tqueryParameters: ['BusinessId' -> ($BusinessId)],\n\tpaginationRules: ['supportRFC5988' -> 'true'],\n\tresponseFormat: ['type' -> 'json', 'documentForm' -> 'documentPerLine']) ~> RedisBusinessInfo\nRedisBusinessInfo alterRow(upsertIf(true())) ~> UpsertRow\nUpsertRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tstore: 'sqlserver',\n\tschemaName: 'dbo',\n\ttableName: 'googlebusinesses',\n\tinsertable: false,\n\tupdateable: false,\n\tdeletable: false,\n\tupsertable: true,\n\tkeys:['businessid'],\n\tskipKeyWrites:true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tbusinessid = body.businessId,\n\t\tqueries_direct = body.experience,\n\t\tqueries_indirect = body.mode,\n\t\tqueries_chain = body.reviewCount,\n\t\tviews_maps = body.netSaleValue\n\t)) ~> CollectMetrics"
+		}
+	}
+}

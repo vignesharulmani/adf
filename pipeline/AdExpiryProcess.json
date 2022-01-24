@@ -1,0 +1,92 @@
+{
+	"name": "AdExpiryProcess",
+	"properties": {
+		"description": "This PL is used to expire ads via this procedure - prc_adexpiry_process ",
+		"activities": [
+			{
+				"name": "var_dbnames",
+				"type": "SetVariable",
+				"dependsOn": [],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "dbnames_array",
+					"value": [
+						"Ads_AP",
+						"Ads_BR",
+						"Ads_DL",
+						"Ads_GJ",
+						"Ads_KA",
+						"Ads_KL",
+						"Ads_MH",
+						"Ads_MP",
+						"Ads_OR",
+						"Ads_PB",
+						"Ads_RJ",
+						"Ads_TN",
+						"Ads_UP",
+						"Ads_WB"
+					]
+				}
+			},
+			{
+				"name": "Exec SP in Each DB",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "var_dbnames",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@variables('dbnames_array')",
+						"type": "Expression"
+					},
+					"activities": [
+						{
+							"name": "Expiry Process SP",
+							"description": "This component is going to execute this proc - prc_adexpiry_process ",
+							"type": "SqlServerStoredProcedure",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "7.00:00:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"storedProcedureName": "[dbo].[prc_adexpiry_process]"
+							},
+							"linkedServiceName": {
+								"referenceName": "LNKLSAds_Dynamic",
+								"type": "LinkedServiceReference",
+								"parameters": {
+									"param_dbname": {
+										"value": "@item()",
+										"type": "Expression"
+									}
+								}
+							}
+						}
+					]
+				}
+			}
+		],
+		"variables": {
+			"dbnames_array": {
+				"type": "Array"
+			}
+		},
+		"folder": {
+			"name": "LsAds"
+		},
+		"annotations": [],
+		"lastPublishTime": "2022-01-10T13:58:51Z"
+	},
+	"type": "Microsoft.DataFactory/factories/pipelines"
+}

@@ -1,0 +1,17 @@
+{
+	"name": "DS_Dynamic_YP",
+	"properties": {
+		"description": "This dataset is used to return dynamic result-set either from queries/storedprocedures/tables",
+		"linkedServiceName": {
+			"referenceName": "LNKYPAzure",
+			"type": "LinkedServiceReference"
+		},
+		"folder": {
+			"name": "YP"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}

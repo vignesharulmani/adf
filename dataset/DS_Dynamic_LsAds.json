@@ -1,0 +1,27 @@
+{
+	"name": "DS_Dynamic_LsAds",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LNKLSAds_Dynamic",
+			"type": "LinkedServiceReference",
+			"parameters": {
+				"param_dbname": {
+					"value": "@dataset().ds_db_param",
+					"type": "Expression"
+				}
+			}
+		},
+		"parameters": {
+			"ds_db_param": {
+				"type": "string"
+			}
+		},
+		"folder": {
+			"name": "LsAds"
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	},
+	"type": "Microsoft.DataFactory/factories/datasets"
+}
