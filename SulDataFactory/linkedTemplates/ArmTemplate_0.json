@@ -1,0 +1,1125 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "SulDataFactory"
+		},
+		"LNKCRMVenus_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKCRMVenus'"
+		},
+		"LNKCRM_Dynamic_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKCRM_Dynamic'"
+		},
+		"LNKLSAds_Dynamic_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKLSAds_Dynamic'"
+		},
+		"LNKLSAds_Dynamic_Unencrypt_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKLSAds_Dynamic_Unencrypt'"
+		},
+		"LNKYPAzure_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure'"
+		},
+		"LNKYPAzure_Unencrypt_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure_Unencrypt'"
+		},
+		"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://lslistings-dotnetcore5-qa.azurewebsites.net/api/business/GetRedisBusinessInfo"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/LNKCRMVenus')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"dbname": {
+						"type": "string",
+						"defaultValue": "venus"
+					}
+				},
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('LNKCRMVenus_connectionString')]",
+					"alwaysEncryptedSettings": {
+						"alwaysEncryptedAkvAuthType": "ManagedIdentity"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LNKCRM_Dynamic')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"dbname": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('LNKCRM_Dynamic_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LNKLSAds_Dynamic')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"param_dbname": {
+						"type": "String"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LNKLSAds_Dynamic_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LNKLSAds_Dynamic_Unencrypt')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"param_dbname": {
+						"type": "string",
+						"defaultValue": "Ads_TN"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LNKLSAds_Dynamic_Unencrypt_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LNKYPAzure')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LNKYPAzure_connectionString')]",
+					"alwaysEncryptedSettings": {
+						"alwaysEncryptedAkvAuthType": "ManagedIdentity"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LNKYPAzure_Unencrypt')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This linked service should be used only for Data Flows",
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LNKYPAzure_Unencrypt_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LNK_RestAPI_RedisBusinessInfo')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"BusinessId": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "RestService",
+				"typeProperties": {
+					"url": "[parameters('LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url')]",
+					"enableServerCertificateValidation": true,
+					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_1600')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-01-06T16:00:00",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AdExpiryProcess')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to expire ads via this procedure - prc_adexpiry_process ",
+				"activities": [
+					{
+						"name": "var_dbnames",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "dbnames_array",
+							"value": [
+								"Ads_AP",
+								"Ads_BR",
+								"Ads_DL",
+								"Ads_GJ",
+								"Ads_KA",
+								"Ads_KL",
+								"Ads_MH",
+								"Ads_MP",
+								"Ads_OR",
+								"Ads_PB",
+								"Ads_RJ",
+								"Ads_TN",
+								"Ads_UP",
+								"Ads_WB"
+							]
+						}
+					},
+					{
+						"name": "Exec SP in Each DB",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "var_dbnames",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@variables('dbnames_array')",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Expiry Process SP",
+									"description": "This component is going to execute this proc - prc_adexpiry_process ",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[prc_adexpiry_process]"
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKLSAds_Dynamic",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"param_dbname": {
+												"value": "@item()",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"dbnames_array": {
+						"type": "Array"
+					}
+				},
+				"folder": {
+					"name": "LsAds"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-10T13:58:51Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKLSAds_Dynamic')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AdListingsCount')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to refresh listings/customer/campaign/user adscount.",
+				"activities": [
+					{
+						"name": "var_dbnames",
+						"description": "",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "dbnames_array",
+							"value": [
+								"Ads_AP",
+								"Ads_BR",
+								"Ads_DL",
+								"Ads_GJ",
+								"Ads_KA",
+								"Ads_KL",
+								"Ads_MH",
+								"Ads_MP",
+								"Ads_OR",
+								"Ads_PB",
+								"Ads_RJ",
+								"Ads_TN",
+								"Ads_UP",
+								"Ads_WB"
+							]
+						}
+					},
+					{
+						"name": "Exec SP in Each DB",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "var_dbnames",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@variables('dbnames_array')",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Refresh AdsCount SP1",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[prc_mng_adscount_part1]"
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKLSAds_Dynamic",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"param_dbname": {
+												"value": "@item()",
+												"type": "Expression"
+											}
+										}
+									}
+								},
+								{
+									"name": "Refresh AdsCount SP2",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Refresh AdsCount SP1",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[prc_mng_adscount_Part3]"
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKLSAds_Dynamic",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"param_dbname": {
+												"value": "@item()",
+												"type": "Expression"
+											}
+										}
+									}
+								},
+								{
+									"name": "Refresh bhk Attribute AdsCount",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Refresh AdsCount SP2",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[Prc_mng_citysubcatareaseoattributeadscount_br_pt_re]"
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKLSAds_Dynamic",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"param_dbname": {
+												"value": "@item()",
+												"type": "Expression"
+											}
+										}
+									}
+								},
+								{
+									"name": "Refresh price Attribute Adscount",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Refresh bhk Attribute AdsCount",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[Prc_mng_citysubcatareaseoattributeadscount_pr_pt_re]"
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKLSAds_Dynamic",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"param_dbname": {
+												"value": "@item()",
+												"type": "Expression"
+											}
+										}
+									}
+								},
+								{
+									"name": "Refresh Other SEO Attribute Adscount",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Refresh price Attribute Adscount",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[Prc_mng_citysubcatareaseoattributeadscount_others_re]"
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKLSAds_Dynamic",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"param_dbname": {
+												"value": "@item()",
+												"type": "Expression"
+											}
+										}
+									}
+								},
+								{
+									"name": "Refresh bhk Attribute AdsCount Rental",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Refresh Other SEO Attribute Adscount",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[Prc_mng_citysubcatareaseoattributeadscount_br_pt_rn]"
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKLSAds_Dynamic",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"param_dbname": {
+												"value": "@item()",
+												"type": "Expression"
+											}
+										}
+									}
+								},
+								{
+									"name": "Refresh price Attribute Adscount Rental",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Refresh bhk Attribute AdsCount Rental",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[Prc_mng_citysubcatareaseoattributeadscount_pr_pt_rn]"
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKLSAds_Dynamic",
+										"type": "LinkedServiceReference",
+										"parameters": {
+											"param_dbname": {
+												"value": "@item()",
+												"type": "Expression"
+											}
+										}
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"dbnames_array": {
+						"type": "Array"
+					}
+				},
+				"folder": {
+					"name": "LsAds"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-10T12:24:39Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKLSAds_Dynamic')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/FixBusinessScore')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to resolve zero & mismatch businessscore",
+				"activities": [
+					{
+						"name": "ScoreResolver",
+						"description": "This component is used to execute this procedure - prc_businessscore_resolver",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[prc_businessscore_resolver]"
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKYPAzure",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "YP/Resolver"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-06T12:05:16Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/InitiateInsightCollection')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to populate the data in this table - promanagecustomerinsights",
+				"activities": [
+					{
+						"name": "Initiate Insights",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [
+							{
+								"activity": "var_insightdate",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[prc_populate_promanagecustomerinsights]",
+							"storedProcedureParameters": {
+								"insightdate": {
+									"value": {
+										"value": "@variables('vInsightDate')",
+										"type": "Expression"
+									},
+									"type": "DateTime"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKYPAzure",
+							"type": "LinkedServiceReference"
+						}
+					},
+					{
+						"name": "var_insightdate",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "vInsightDate",
+							"value": {
+								"value": "@adddays(utcnow(),-4)",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"vInsightDate": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-24T07:02:53Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/PrepareDashboardForSuperAdmin')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to populate specific customer promanage dashboard data for superadmin users.",
+				"activities": [
+					{
+						"name": "Populate UserBusinessMapping",
+						"description": "This component is used to populate data into this table - userbusinessmapping via this proc - prc_prepare_promanagedashboard_superadmin",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:05:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[prc_prepare_promanagedashboard_superadmin]"
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKYPAzure",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-21T06:04:19Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ReviewCountStats')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to update review count stats.\n",
+				"activities": [
+					{
+						"name": "ReviewCountUpdate",
+						"description": "This component is used to execute this proc:prc_dailyschedulereviewcountupdate",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[prc_dailyschedulereviewcountupdate]"
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKYPAzure",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "YP/Stats"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-06T12:11:17Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Dynamic_CRM')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LNKCRM_Dynamic",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"dbname": {
+							"value": "@dataset().ds_db_param",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"ds_db_param": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "CRM"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKCRM_Dynamic')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Dynamic_LsAds')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LNKLSAds_Dynamic",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"param_dbname": {
+							"value": "@dataset().ds_db_param",
+							"type": "Expression"
+						}
+					}
+				},
+				"parameters": {
+					"ds_db_param": {
+						"type": "string"
+					}
+				},
+				"folder": {
+					"name": "LsAds"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKLSAds_Dynamic')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Dynamic_YP')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This dataset is used to return dynamic result-set either from queries/storedprocedures/tables",
+				"linkedServiceName": {
+					"referenceName": "LNKYPAzure",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "YP"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Dynamic_YP_Unencrypt')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LNKYPAzure_Unencrypt",
+					"type": "LinkedServiceReference"
+				},
+				"folder": {
+					"name": "YP"
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure_Unencrypt')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_RestAPI_RedisBusinessInfo')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LNK_RestAPI_RedisBusinessInfo",
+					"type": "LinkedServiceReference",
+					"parameters": {
+						"BusinessId": "10204462"
+					}
+				},
+				"parameters": {
+					"BusinessId": {
+						"type": "string",
+						"defaultValue": "10204462"
+					}
+				},
+				"folder": {
+					"name": "YP"
+				},
+				"annotations": [],
+				"type": "RestResource",
+				"typeProperties": {
+					"relativeUrl": {
+						"value": "@concat('?BusinessId=',dataset().BusinessId)",
+						"type": "Expression"
+					}
+				},
+				"schema": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNK_RestAPI_RedisBusinessInfo')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AutoAdExtension')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "var_dbnames",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "dbnames_array",
+							"value": [
+								"Ads_TN"
+							]
+						}
+					},
+					{
+						"name": "GetCampaigns",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "var_dbnames",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@variables('dbnames_array')",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "AdExpireCampaigns",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[prc_get_campaigns_adextension]",
+											"storedProcedureParameters": {
+												"duration": {
+													"type": "Int32",
+													"value": "1"
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "DS_Dynamic_LsAds",
+											"type": "DatasetReference",
+											"parameters": {
+												"ds_db_param": {
+													"value": "@item()",
+													"type": "Expression"
+												}
+											}
+										},
+										"firstRowOnly": false
+									}
+								},
+								{
+									"name": "var_campaigns_array",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "AdExpireCampaigns",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "campaigns_array",
+										"value": {
+											"value": "@array(activity('AdExpireCampaigns').output.value)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "var_campaigns_commaseparate",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "var_campaigns_array",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "campaigns_commaseparate",
+										"value": {
+											"value": "@replace(replace(join(variables('campaigns_array'),','),'{\"campaignid\":',''),'}','')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "ValidateCampaigns",
+									"type": "Lookup",
+									"dependsOn": [
+										{
+											"activity": "var_campaigns_commaseparate",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.00:05:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "SqlServerSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[prc_get_campaigns]",
+											"storedProcedureParameters": {
+												"validatecampaignids": {
+													"type": "String",
+													"value": {
+														"value": "@variables('campaigns_commaseparate')",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "DS_Dynamic_CRM",
+											"type": "DatasetReference",
+											"parameters": {
+												"ds_db_param": "venus"
+											}
+										},
+										"firstRowOnly": false
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"dbnames_array": {
+						"type": "Array"
+					},
+					"campaigns_array": {
+						"type": "Array"
+					},
+					"campaigns_commaseparate": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "LsAds"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-22T07:02:36Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_LsAds')]",
+				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_CRM')]"
+			]
+		}
+	]
+}

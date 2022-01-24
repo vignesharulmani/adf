@@ -1,0 +1,111 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "SulDataFactory"
+		},
+		"LNKCRMVenus_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKCRMVenus'"
+		},
+		"LNKCRM_Dynamic_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKCRM_Dynamic'"
+		},
+		"LNKLSAds_Dynamic_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKLSAds_Dynamic'"
+		},
+		"LNKLSAds_Dynamic_Unencrypt_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKLSAds_Dynamic_Unencrypt'"
+		},
+		"LNKYPAzure_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure'"
+		},
+		"LNKYPAzure_Unencrypt_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure_Unencrypt'"
+		},
+		"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
+			"type": "string",
+			"defaultValue": "https://lslistings-dotnetcore5-qa.azurewebsites.net/api/business/GetRedisBusinessInfo"
+		},
+		"containerUri": {
+			"type": "string",
+			"metadata": "URI to storage account containing linked ARM templates"
+		},
+		"containerSasToken": {
+			"type": "string",
+			"metadata": "Sas token to storage account containing linked ARM templates"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "SulDataFactory_ArmTemplate_0",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_0.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					},
+					"LNKCRMVenus_connectionString": {
+						"value": "[parameters('LNKCRMVenus_connectionString')]"
+					},
+					"LNKCRM_Dynamic_connectionString": {
+						"value": "[parameters('LNKCRM_Dynamic_connectionString')]"
+					},
+					"LNKLSAds_Dynamic_connectionString": {
+						"value": "[parameters('LNKLSAds_Dynamic_connectionString')]"
+					},
+					"LNKLSAds_Dynamic_Unencrypt_connectionString": {
+						"value": "[parameters('LNKLSAds_Dynamic_Unencrypt_connectionString')]"
+					},
+					"LNKYPAzure_connectionString": {
+						"value": "[parameters('LNKYPAzure_connectionString')]"
+					},
+					"LNKYPAzure_Unencrypt_connectionString": {
+						"value": "[parameters('LNKYPAzure_Unencrypt_connectionString')]"
+					},
+					"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
+						"value": "[parameters('LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url')]"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "SulDataFactory_ArmTemplate_1",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_1.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'SulDataFactory_ArmTemplate_0')]"
+			]
+		}
+	]
+}

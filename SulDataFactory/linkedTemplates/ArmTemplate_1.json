@@ -1,0 +1,1066 @@
+{
+	"$schema": "http://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+	"contentVersion": "1.0.0.0",
+	"parameters": {
+		"factoryName": {
+			"type": "string",
+			"metadata": "Data Factory name",
+			"defaultValue": "SulDataFactory"
+		}
+	},
+	"variables": {
+		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
+	},
+	"resources": [
+		{
+			"name": "[concat(parameters('factoryName'), '/BusinessProfileHealthHistory')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to populate data for this history table - businessprofilehealthhistory",
+				"activities": [
+					{
+						"name": "Get Customers",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[prc_get_promanagecustomers]",
+								"queryTimeout": "00:10:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_Dynamic_YP",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Populate History Data for Each Customer",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Customers",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Customers').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Populate Business Health History",
+									"description": "This component is used to populate the data for businessprofilehealthhistory using  the proc - prc_populate_businessprofilehealthhistory",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.00:15:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[prc_populate_businessprofilehealthhistory]",
+										"storedProcedureParameters": {
+											"customerid": {
+												"value": {
+													"value": "@item().customerid",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKYPAzure",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-18T13:20:54Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LoadBVNMetricsSpecificDate')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to load bvn callstatus metrics in businessmetrics table.",
+				"activities": [
+					{
+						"name": "Get Customers",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:05:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[prc_get_promanagecustomers]",
+								"queryTimeout": "00:10:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_Dynamic_YP",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Load BVN Metrics For Each Customer",
+						"description": "This component is used to populate the bvn metrics data in businessmetrics using  the proc - prc_load_bvn_metrics",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Customers",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							},
+							{
+								"activity": "var_insightdate",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Customers').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "InsertBVNMetrics",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.00:10:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[prc_load_bvn_metrics]",
+										"storedProcedureParameters": {
+											"customerid": {
+												"value": {
+													"value": "@item().customerid",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"insightdate": {
+												"value": {
+													"value": "@variables('vInsightDate')",
+													"type": "Expression"
+												},
+												"type": "DateTime"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKYPAzure",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					},
+					{
+						"name": "var_insightdate",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "vInsightDate",
+							"value": {
+								"value": "@pipeline().parameters.pInsightDate",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"pInsightDate": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"vInsightDate": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-24T10:24:43Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MakeBusinessToCollectMetrics')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Customers With Insight Date",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[prc_get_promanagecustomerinsights]",
+								"storedProcedureParameters": {
+									"rowstofetch": {
+										"type": "Int32",
+										"value": {
+											"value": "@pipeline().parameters.rowstofetch",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "00:10:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_Dynamic_YP",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Prepare Businesses To Collect Metrics",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Customers With Insight Date",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Customers With Insight Date').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Load Google Businesses",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.00:10:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[prc_load_promanagebusinessinsights]",
+										"storedProcedureParameters": {
+											"customerid": {
+												"value": {
+													"value": "@item().customerid",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"insightdate": {
+												"value": {
+													"value": "@item().insightdate",
+													"type": "Expression"
+												},
+												"type": "DateTime"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKYPAzure",
+										"type": "LinkedServiceReference"
+									}
+								},
+								{
+									"name": "Update Customer Status",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Load Google Businesses",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[prc_update_promanagecustomerinsights]",
+										"storedProcedureParameters": {
+											"comments": {
+												"value": "BusinessPopulated",
+												"type": "String"
+											},
+											"contentid": {
+												"value": {
+													"value": "@item().contentid",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"isprocessed": {
+												"value": "1",
+												"type": "Int32"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKYPAzure",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"rowstofetch": {
+						"type": "int",
+						"defaultValue": 1000
+					}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-12T13:29:33Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MigrateBVNCallsSpecificDate')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "var_CallDate",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "vCallDate",
+							"value": {
+								"value": "@pipeline().parameters.CallDate",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "GetBVNCalls",
+						"type": "Lookup",
+						"dependsOn": [
+							{
+								"activity": "var_CallDate",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"policy": {
+							"timeout": "0.00:05:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[prc_get_GMBEnterPriseBVNCallBack]",
+								"storedProcedureParameters": {
+									"calldate": {
+										"type": "DateTime",
+										"value": {
+											"value": "@variables('vCallDate')",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_Dynamic_CRM",
+								"type": "DatasetReference",
+								"parameters": {
+									"ds_db_param": "venus"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "MigrateBVNCalls",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "GetBVNCalls",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('GetBVNCalls').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "MigrateToNewSchema-bvncalls",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.00:05:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[prc_migrate_bvncalls]",
+										"storedProcedureParameters": {
+											"callernumber": {
+												"value": {
+													"value": "@item().callernumber",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"callstatus": {
+												"value": {
+													"value": "@item().bvncallstatus",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"duration": {
+												"value": {
+													"value": "@item().duration",
+													"type": "Expression"
+												},
+												"type": "TimeSpan"
+											},
+											"provider": {
+												"value": "Knowlarity",
+												"type": "String"
+											},
+											"recordingurl": {
+												"value": {
+													"value": "@item().recordingurl",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"rowid": {
+												"value": {
+													"value": "@item().rowid",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"starttime": {
+												"value": {
+													"value": "@item().starttime",
+													"type": "Expression"
+												},
+												"type": "DateTime"
+											},
+											"virtualnumber": {
+												"value": {
+													"value": "@item().virtualnumber",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"agentnumber": {
+												"value": {
+													"value": "@item().agentnumber",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"calltype": {
+												"value": {
+													"value": "@item().calltype",
+													"type": "Expression"
+												},
+												"type": "String"
+											},
+											"actualcrdate": {
+												"value": {
+													"value": "@item().crdate",
+													"type": "Expression"
+												},
+												"type": "Datetime"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKYPAzure",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"parameters": {
+					"CallDate": {
+						"type": "string"
+					}
+				},
+				"variables": {
+					"vCallDate": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-22T07:00:20Z"
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_0200_1000_1800')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "Triggers @ every 8 hours - 02:00AM|10:00AM:06:00PM",
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "FixBusinessScore",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "ReviewCountStats",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "AdListingsCount",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Hour",
+						"interval": 8,
+						"startTime": "2022-01-06T18:00:00",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/TestRestAPI')]",
+			"type": "Microsoft.DataFactory/factories/dataflows",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"type": "MappingDataFlow",
+				"typeProperties": {
+					"sources": [
+						{
+							"dataset": {
+								"referenceName": "DS_RestAPI_RedisBusinessInfo",
+								"type": "DatasetReference"
+							},
+							"name": "RedisBusinessInfo"
+						}
+					],
+					"sinks": [
+						{
+							"linkedService": {
+								"referenceName": "LNKYPAzure_Unencrypt",
+								"type": "LinkedServiceReference"
+							},
+							"name": "CollectMetrics"
+						}
+					],
+					"transformations": [
+						{
+							"name": "UpsertRow"
+						}
+					],
+					"script": "parameters{\n\tBusinessId as integer (10572922)\n}\nsource(output(\n\t\tbody as (about as string, areaId as short, areaName as string, attributeTag as string, baseCityId as boolean, businessId as integer, businessName as string, businessUrl as string, certificateUrl as string, cityId as boolean, cityName as string, displayServices as string[], experience as short, hired as boolean, ibaApproved as boolean, infoAttributes as string[], isBusinessVerified as boolean, isLcfV2_GetQuotes as boolean, isoCertified as boolean, latitude as double, listingScore as double, lonLat as string, longitude as double, mobileNo as string, mode as short, needIds as short[], netSaleValue as double, photo as string, profilePic as string, rating as double, reviewCount as short, reviewCountInfo as string, reviewDescription as (businessId as integer, contributor as string, rating as double, reviewDate as string, reviewDescription as string, reviewId as integer)[], rowId as boolean, score as double, stdCode as short, subCategoryIds as short[], workingHours as ({_24HrsWorking} as boolean, businessId as integer, lunchHourFrom as string, lunchHourTo as string, workingDayFrom as short, workingDayTo as short, workingHourFrom as string, workingHourTo as string), zipCode as integer),\n\t\theaders as [string,string]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\thttpMethod: 'GET',\n\ttimeout: 30,\n\trequestInterval: 0,\n\tqueryParameters: ['BusinessId' -> ($BusinessId)],\n\tpaginationRules: ['supportRFC5988' -> 'true'],\n\tresponseFormat: ['type' -> 'json', 'documentForm' -> 'documentPerLine']) ~> RedisBusinessInfo\nRedisBusinessInfo alterRow(upsertIf(true())) ~> UpsertRow\nUpsertRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tstore: 'sqlserver',\n\tschemaName: 'dbo',\n\ttableName: 'googlebusinesses',\n\tinsertable: false,\n\tupdateable: false,\n\tdeletable: false,\n\tupsertable: true,\n\tkeys:['businessid'],\n\tskipKeyWrites:true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tbusinessid = body.businessId,\n\t\tqueries_direct = body.experience,\n\t\tqueries_indirect = body.mode,\n\t\tqueries_chain = body.reviewCount,\n\t\tviews_maps = body.netSaleValue\n\t)) ~> CollectMetrics"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LoadBVNMetrics')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "var_insightdate",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "vInsightDate",
+							"value": {
+								"value": "@adddays(utcnow(),-4)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "LoadBVNMetrics",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "var_insightdate",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "LoadBVNMetricsSpecificDate",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"pInsightDate": {
+									"value": "@variables('vInsightDate')",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"vInsightDate": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-24T10:24:45Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/LoadBVNMetricsSpecificDate')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/MigrateBVNCalls')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "var_CallDate",
+						"type": "SetVariable",
+						"dependsOn": [],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "VCallDate",
+							"value": {
+								"value": "@adddays(utcnow(),-4)",
+								"type": "Expression"
+							}
+						}
+					},
+					{
+						"name": "MigrateBVNCallsSpecficDate",
+						"type": "ExecutePipeline",
+						"dependsOn": [
+							{
+								"activity": "var_CallDate",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"pipeline": {
+								"referenceName": "MigrateBVNCallsSpecificDate",
+								"type": "PipelineReference"
+							},
+							"waitOnCompletion": true,
+							"parameters": {
+								"CallDate": {
+									"value": "@variables('VCallDate')",
+									"type": "Expression"
+								}
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"VCallDate": {
+						"type": "String"
+					}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-22T05:22:24Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/MigrateBVNCallsSpecificDate')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/pl_testrestapi')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "googlebusinesses",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderQuery": "select contentid,businessid,insightdate from googlebusinesses (nolock)\nwhere isprocessed = 0",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_Dynamic_YP",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "MetricsFromGoogle",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "googlebusinesses",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('googlebusinesses').output.value",
+								"type": "Expression"
+							},
+							"isSequential": true,
+							"activities": [
+								{
+									"name": "DF_TestRestAPI",
+									"type": "ExecuteDataFlow",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "1.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"dataflow": {
+											"referenceName": "TestRestAPI",
+											"type": "DataFlowReference",
+											"parameters": {
+												"BusinessId": {
+													"value": "@item().businessid",
+													"type": "Expression"
+												}
+											},
+											"datasetParameters": {
+												"RedisBusinessInfo": {
+													"BusinessId": {
+														"value": "@item().businessid",
+														"type": "Expression"
+													}
+												},
+												"CollectMetrics": {}
+											}
+										},
+										"staging": {},
+										"compute": {
+											"coreCount": 8,
+											"computeType": "General"
+										},
+										"traceLevel": "Fine"
+									}
+								},
+								{
+									"name": "UpdateBusiness",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "DF_TestRestAPI",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "7.00:00:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[prc_update_googlebusinesses]",
+										"storedProcedureParameters": {
+											"comments": {
+												"value": "Data Collected",
+												"type": "String"
+											},
+											"contentid": {
+												"value": {
+													"value": "@item().contentid",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"isprocessed": {
+												"value": "1",
+												"type": "Byte"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKYPAzure",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-07T10:09:13Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/dataflows/TestRestAPI')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_2230')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "AdExpiryProcess",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "BusinessProfileHealthHistory",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "MakeBusinessToCollectMetrics",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-01-10T22:30:00",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/BusinessProfileHealthHistory')]",
+				"[concat(variables('factoryId'), '/pipelines/MakeBusinessToCollectMetrics')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_2200')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "InitiateInsightCollection",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "PrepareDashboardForSuperAdmin",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "LoadBVNMetrics",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-01-12T22:00:00",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/LoadBVNMetrics')]"
+			]
+		}
+	]
+}
