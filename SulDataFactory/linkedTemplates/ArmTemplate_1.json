@@ -270,7 +270,7 @@
 									"rowstofetch": {
 										"type": "Int32",
 										"value": {
-											"value": "@pipeline().parameters.rowstofetch",
+											"value": "@pipeline().parameters.pRowsToFetch",
 											"type": "Expression"
 										}
 									}
@@ -393,7 +393,7 @@
 					"cancelAfter": {}
 				},
 				"parameters": {
-					"rowstofetch": {
+					"pRowsToFetch": {
 						"type": "int",
 						"defaultValue": 1000
 					}
