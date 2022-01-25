@@ -5,9 +5,6 @@
 		"factoryName": {
 			"value": "SulDataFactory"
 		},
-		"LNKCRMVenus_connectionString": {
-			"value": ""
-		},
 		"LNKCRM_Dynamic_connectionString": {
 			"value": ""
 		},

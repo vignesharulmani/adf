@@ -7,10 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "SulDataFactory"
 		},
-		"LNKCRMVenus_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'LNKCRMVenus'"
-		},
 		"LNKCRM_Dynamic_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKCRM_Dynamic'"
@@ -1870,28 +1866,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LNK_RestAPI_RedisBusinessInfo')]"
 			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LNKCRMVenus')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"parameters": {
-					"dbname": {
-						"type": "string",
-						"defaultValue": "venus"
-					}
-				},
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('LNKCRMVenus_connectionString')]",
-					"alwaysEncryptedSettings": {
-						"alwaysEncryptedAkvAuthType": "ManagedIdentity"
-					}
-				}
-			},
-			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/LNKCRM_Dynamic')]",

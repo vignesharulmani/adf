@@ -7,10 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "SulDataFactory"
 		},
-		"LNKCRMVenus_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'LNKCRMVenus'"
-		},
 		"LNKCRM_Dynamic_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKCRM_Dynamic'"
@@ -61,9 +57,6 @@
 				"parameters": {
 					"factoryName": {
 						"value": "[parameters('factoryName')]"
-					},
-					"LNKCRMVenus_connectionString": {
-						"value": "[parameters('LNKCRMVenus_connectionString')]"
 					},
 					"LNKCRM_Dynamic_connectionString": {
 						"value": "[parameters('LNKCRM_Dynamic_connectionString')]"

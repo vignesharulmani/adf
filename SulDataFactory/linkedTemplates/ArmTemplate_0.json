@@ -7,10 +7,6 @@
 			"metadata": "Data Factory name",
 			"defaultValue": "SulDataFactory"
 		},
-		"LNKCRMVenus_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'LNKCRMVenus'"
-		},
 		"LNKCRM_Dynamic_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKCRM_Dynamic'"
@@ -40,28 +36,6 @@
 		"factoryId": "[concat('Microsoft.DataFactory/factories/', parameters('factoryName'))]"
 	},
 	"resources": [
-		{
-			"name": "[concat(parameters('factoryName'), '/LNKCRMVenus')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"parameters": {
-					"dbname": {
-						"type": "string",
-						"defaultValue": "venus"
-					}
-				},
-				"annotations": [],
-				"type": "SqlServer",
-				"typeProperties": {
-					"connectionString": "[parameters('LNKCRMVenus_connectionString')]",
-					"alwaysEncryptedSettings": {
-						"alwaysEncryptedAkvAuthType": "ManagedIdentity"
-					}
-				}
-			},
-			"dependsOn": []
-		},
 		{
 			"name": "[concat(parameters('factoryName'), '/LNKCRM_Dynamic')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
@@ -1119,6 +1093,107 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_LsAds')]",
 				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_CRM')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/BusinessProfileHealthHistory')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to populate data for this history table - businessprofilehealthhistory",
+				"activities": [
+					{
+						"name": "Get Customers",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[prc_get_promanagecustomers]",
+								"queryTimeout": "00:10:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_Dynamic_YP",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Populate History Data for Each Customer",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Customers",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Customers').output.value",
+								"type": "Expression"
+							},
+							"activities": [
+								{
+									"name": "Populate Business Health History",
+									"description": "This component is used to populate the data for businessprofilehealthhistory using  the proc - prc_populate_businessprofilehealthhistory",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.00:15:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[prc_populate_businessprofilehealthhistory]",
+										"storedProcedureParameters": {
+											"customerid": {
+												"value": {
+													"value": "@item().customerid",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKYPAzure",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": [],
+				"lastPublishTime": "2022-01-18T13:20:54Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_YP')]",
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
 			]
 		}
 	]
