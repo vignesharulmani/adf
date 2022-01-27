@@ -1,0 +1,33 @@
+{
+	"name": "SyncModifiedBusinessToRedis",
+	"properties": {
+		"description": "This PL is used to sync modified business to redis via proc - prc_sync_modifiedbusiness_redis",
+		"activities": [
+			{
+				"name": "Sync Business To Redis",
+				"description": "This component is used to populate the data in the table - pushbusinesstoredis",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[prc_sync_modifiedbusiness_redis]"
+				},
+				"linkedServiceName": {
+					"referenceName": "LNKYPAzure",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "YP/Resolver"
+		},
+		"annotations": []
+	}
+}
