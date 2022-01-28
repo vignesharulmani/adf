@@ -1356,7 +1356,8 @@
 								"value": "@activity('GetBVNCalls').output.value",
 								"type": "Expression"
 							},
-							"isSequential": true,
+							"isSequential": false,
+							"batchCount": 10,
 							"activities": [
 								{
 									"name": "MigrateToNewSchema-bvncalls",
@@ -1564,6 +1565,48 @@
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-06T12:11:17Z"
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/SyncModifiedBusinessToRedis')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to sync modified business to redis via proc - prc_sync_modifiedbusiness_redis",
+				"activities": [
+					{
+						"name": "Sync Business To Redis",
+						"description": "This component is used to populate the data in the table - pushbusinesstoredis",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[prc_sync_modifiedbusiness_redis]"
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKYPAzure",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "YP/Resolver"
+				},
+				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
@@ -2020,6 +2063,36 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/tr_1000')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SyncModifiedBusinessToRedis",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-01-28T10:00:00",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SyncModifiedBusinessToRedis')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/tr_1600')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
@@ -2167,79 +2240,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_RestAPI_RedisBusinessInfo')]",
 				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure_Unencrypt')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SyncModifiedBusinessToRedis')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This PL is used to sync modified business to redis via proc - prc_sync_modifiedbusiness_redis",
-				"activities": [
-					{
-						"name": "Sync Business To Redis",
-						"description": "This component is used to populate the data in the table - pushbusinesstoredis",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[prc_sync_modifiedbusiness_redis]"
-						},
-						"linkedServiceName": {
-							"referenceName": "LNKYPAzure",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "YP/Resolver"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tr_1000')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "SyncModifiedBusinessToRedis",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2022-01-28T10:00:00",
-						"timeZone": "India Standard Time",
-						"schedule": {}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/SyncModifiedBusinessToRedis')]"
 			]
 		}
 	]

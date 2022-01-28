@@ -487,7 +487,8 @@
 								"value": "@activity('GetBVNCalls').output.value",
 								"type": "Expression"
 							},
-							"isSequential": true,
+							"isSequential": false,
+							"batchCount": 10,
 							"activities": [
 								{
 									"name": "MigrateToNewSchema-bvncalls",
@@ -655,6 +656,34 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/tr_1000')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "SyncModifiedBusinessToRedis",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-01-28T10:00:00",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/TestRestAPI')]",
 			"type": "Microsoft.DataFactory/factories/dataflows",
 			"apiVersion": "2018-06-01",
@@ -685,35 +714,6 @@
 						}
 					],
 					"script": "parameters{\n\tBusinessId as integer (10572922)\n}\nsource(output(\n\t\tbody as (about as string, areaId as short, areaName as string, attributeTag as string, baseCityId as boolean, businessId as integer, businessName as string, businessUrl as string, certificateUrl as string, cityId as boolean, cityName as string, displayServices as string[], experience as short, hired as boolean, ibaApproved as boolean, infoAttributes as string[], isBusinessVerified as boolean, isLcfV2_GetQuotes as boolean, isoCertified as boolean, latitude as double, listingScore as double, lonLat as string, longitude as double, mobileNo as string, mode as short, needIds as short[], netSaleValue as double, photo as string, profilePic as string, rating as double, reviewCount as short, reviewCountInfo as string, reviewDescription as (businessId as integer, contributor as string, rating as double, reviewDate as string, reviewDescription as string, reviewId as integer)[], rowId as boolean, score as double, stdCode as short, subCategoryIds as short[], workingHours as ({_24HrsWorking} as boolean, businessId as integer, lunchHourFrom as string, lunchHourTo as string, workingDayFrom as short, workingDayTo as short, workingHourFrom as string, workingHourTo as string), zipCode as integer),\n\t\theaders as [string,string]\n\t),\n\tallowSchemaDrift: true,\n\tvalidateSchema: false,\n\thttpMethod: 'GET',\n\ttimeout: 30,\n\trequestInterval: 0,\n\tqueryParameters: ['BusinessId' -> ($BusinessId)],\n\tpaginationRules: ['supportRFC5988' -> 'true'],\n\tresponseFormat: ['type' -> 'json', 'documentForm' -> 'documentPerLine']) ~> RedisBusinessInfo\nRedisBusinessInfo alterRow(upsertIf(true())) ~> UpsertRow\nUpsertRow sink(allowSchemaDrift: true,\n\tvalidateSchema: false,\n\tformat: 'table',\n\tstore: 'sqlserver',\n\tschemaName: 'dbo',\n\ttableName: 'googlebusinesses',\n\tinsertable: false,\n\tupdateable: false,\n\tdeletable: false,\n\tupsertable: true,\n\tkeys:['businessid'],\n\tskipKeyWrites:true,\n\tskipDuplicateMapInputs: true,\n\tskipDuplicateMapOutputs: true,\n\terrorHandlingOption: 'stopOnFirstError',\n\tmapColumn(\n\t\tbusinessid = body.businessId,\n\t\tqueries_direct = body.experience,\n\t\tqueries_indirect = body.mode,\n\t\tqueries_chain = body.reviewCount,\n\t\tviews_maps = body.netSaleValue\n\t)) ~> CollectMetrics"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tr_1000')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "SyncModifiedBusinessToRedis",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2022-01-28T10:00:00",
-						"timeZone": "India Standard Time",
-						"schedule": {}
-					}
 				}
 			},
 			"dependsOn": []
