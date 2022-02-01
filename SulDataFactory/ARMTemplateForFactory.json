@@ -2175,13 +2175,6 @@
 					},
 					{
 						"pipelineReference": {
-							"referenceName": "BusinessProfileHealthHistory",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					},
-					{
-						"pipelineReference": {
 							"referenceName": "MakeBusinessToCollectMetrics",
 							"type": "PipelineReference"
 						},
@@ -2200,7 +2193,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/AdExpiryProcess')]",
-				"[concat(variables('factoryId'), '/pipelines/BusinessProfileHealthHistory')]",
 				"[concat(variables('factoryId'), '/pipelines/MakeBusinessToCollectMetrics')]"
 			]
 		},
