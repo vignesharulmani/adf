@@ -426,7 +426,7 @@
 													"value": "@item().duration",
 													"type": "Expression"
 												},
-												"type": "String"
+												"type": "Timespan"
 											},
 											"provider": {
 												"value": "Knowlarity",
