@@ -114,7 +114,7 @@
 											"value": "@item().duration",
 											"type": "Expression"
 										},
-										"type": "TimeSpan"
+										"type": "String"
 									},
 									"provider": {
 										"value": "Knowlarity",
