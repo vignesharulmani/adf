@@ -9,12 +9,6 @@
 					"referenceName": "AdExpiryProcess",
 					"type": "PipelineReference"
 				}
-			},
-			{
-				"pipelineReference": {
-					"referenceName": "MakeBusinessToCollectMetrics",
-					"type": "PipelineReference"
-				}
 			}
 		],
 		"type": "ScheduleTrigger",
