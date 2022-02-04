@@ -2109,13 +2109,6 @@
 					},
 					{
 						"pipelineReference": {
-							"referenceName": "PrepareDashboardForSuperAdmin",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					},
-					{
-						"pipelineReference": {
 							"referenceName": "LoadBVNMetrics",
 							"type": "PipelineReference"
 						},
@@ -2134,7 +2127,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/InitiateInsightCollection')]",
-				"[concat(variables('factoryId'), '/pipelines/PrepareDashboardForSuperAdmin')]",
 				"[concat(variables('factoryId'), '/pipelines/LoadBVNMetrics')]"
 			]
 		},

@@ -949,13 +949,6 @@
 					},
 					{
 						"pipelineReference": {
-							"referenceName": "PrepareDashboardForSuperAdmin",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					},
-					{
-						"pipelineReference": {
 							"referenceName": "LoadBVNMetrics",
 							"type": "PipelineReference"
 						},
