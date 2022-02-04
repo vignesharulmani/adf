@@ -12,12 +12,6 @@
 			},
 			{
 				"pipelineReference": {
-					"referenceName": "PrepareDashboardForSuperAdmin",
-					"type": "PipelineReference"
-				}
-			},
-			{
-				"pipelineReference": {
 					"referenceName": "LoadBVNMetrics",
 					"type": "PipelineReference"
 				}
