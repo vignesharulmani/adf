@@ -1,5 +1,5 @@
 {
-	"name": "PrepareDashboardForSuperAdmin",
+	"name": "PrepareDashboardForCMO",
 	"properties": {
 		"description": "This PL is used to populate specific customer promanage dashboard data for superadmin users.",
 		"activities": [
