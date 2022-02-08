@@ -9,6 +9,12 @@
 					"referenceName": "AdExpiryProcess",
 					"type": "PipelineReference"
 				}
+			},
+			{
+				"pipelineReference": {
+					"referenceName": "BusinessProfileHealthHistory",
+					"type": "PipelineReference"
+				}
 			}
 		],
 		"type": "ScheduleTrigger",
