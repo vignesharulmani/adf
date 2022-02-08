@@ -2102,13 +2102,6 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "InitiateInsightCollection",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					},
-					{
-						"pipelineReference": {
 							"referenceName": "LoadBVNMetrics",
 							"type": "PipelineReference"
 						},
@@ -2126,7 +2119,6 @@
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/InitiateInsightCollection')]",
 				"[concat(variables('factoryId'), '/pipelines/LoadBVNMetrics')]"
 			]
 		},
