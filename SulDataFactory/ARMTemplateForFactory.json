@@ -2136,6 +2136,13 @@
 							"type": "PipelineReference"
 						},
 						"parameters": {}
+					},
+					{
+						"pipelineReference": {
+							"referenceName": "BusinessProfileHealthHistory",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
 					}
 				],
 				"type": "ScheduleTrigger",
@@ -2144,12 +2151,14 @@
 						"frequency": "Day",
 						"interval": 1,
 						"startTime": "2022-01-10T22:30:00",
-						"timeZone": "India Standard Time"
+						"timeZone": "India Standard Time",
+						"schedule": {}
 					}
 				}
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/AdExpiryProcess')]"
+				"[concat(variables('factoryId'), '/pipelines/AdExpiryProcess')]",
+				"[concat(variables('factoryId'), '/pipelines/BusinessProfileHealthHistory')]"
 			]
 		},
 		{
