@@ -15,7 +15,7 @@
 				},
 				"userProperties": [],
 				"typeProperties": {
-					"storedProcedureName": "[dbo].[prc_test_adf]",
+					"storedProcedureName": "[dbo].[prc_mng_autoscale]",
 					"storedProcedureParameters": {
 						"performancelevel": {
 							"value": "P2",
