@@ -1,34 +1,6 @@
 {
 	"name": "AutoScale",
 	"properties": {
-		"activities": [
-			{
-				"name": "prc_mng_autoscale",
-				"type": "SqlServerStoredProcedure",
-				"dependsOn": [],
-				"policy": {
-					"timeout": "0.00:10:00",
-					"retry": 0,
-					"retryIntervalInSeconds": 30,
-					"secureOutput": false,
-					"secureInput": false
-				},
-				"userProperties": [],
-				"typeProperties": {
-					"storedProcedureName": "[dbo].[prc_mng_autoscale]",
-					"storedProcedureParameters": {
-						"performancelevel": {
-							"value": "P2",
-							"type": "String"
-						}
-					}
-				},
-				"linkedServiceName": {
-					"referenceName": "LNKLeadX",
-					"type": "LinkedServiceReference"
-				}
-			}
-		],
 		"folder": {
 			"name": "LeadX"
 		},
