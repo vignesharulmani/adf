@@ -27,6 +27,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure_Unencrypt'"
 		},
+		"LNKLeadX_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKLeadX'"
+		},
 		"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://lslistings-dotnetcore5-qa.azurewebsites.net/api/business/GetRedisBusinessInfo"
@@ -2151,8 +2155,7 @@
 						"frequency": "Day",
 						"interval": 1,
 						"startTime": "2022-01-10T22:30:00",
-						"timeZone": "India Standard Time",
-						"schedule": {}
+						"timeZone": "India Standard Time"
 					}
 				}
 			},
@@ -2198,6 +2201,65 @@
 				"[concat(variables('factoryId'), '/datasets/DS_RestAPI_RedisBusinessInfo')]",
 				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure_Unencrypt')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/AutoScale')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "prc_mng_autoscale",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[prc_test_adf]",
+							"storedProcedureParameters": {
+								"performancelevel": {
+									"value": "P2",
+									"type": "String"
+								}
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKLeadX",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "LeadX"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKLeadX')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LNKLeadX')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LNKLeadX_connectionString')]"
+				}
+			},
+			"dependsOn": []
 		}
 	]
 }

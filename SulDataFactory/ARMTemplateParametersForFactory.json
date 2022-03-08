@@ -20,6 +20,9 @@
 		"LNKYPAzure_Unencrypt_connectionString": {
 			"value": ""
 		},
+		"LNKLeadX_connectionString": {
+			"value": ""
+		},
 		"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
 			"value": "https://lslistings-dotnetcore5-qa.azurewebsites.net/api/business/GetRedisBusinessInfo"
 		}

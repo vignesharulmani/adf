@@ -27,6 +27,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure_Unencrypt'"
 		},
+		"LNKLeadX_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKLeadX'"
+		},
 		"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://lslistings-dotnetcore5-qa.azurewebsites.net/api/business/GetRedisBusinessInfo"
@@ -137,6 +141,19 @@
 					"url": "[parameters('LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url')]",
 					"enableServerCertificateValidation": true,
 					"authenticationType": "Anonymous"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LNKLeadX')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LNKLeadX_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -929,204 +946,14 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AutoAdExtension')]",
+			"name": "[concat(parameters('factoryName'), '/AutoScale')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"activities": [
 					{
-						"name": "var_dbnames",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "dbnames_array",
-							"value": [
-								"Ads_TN"
-							]
-						}
-					},
-					{
-						"name": "GetCampaigns",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "var_dbnames",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@variables('dbnames_array')",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "AdExpireCampaigns",
-									"type": "Lookup",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "AzureSqlSource",
-											"sqlReaderStoredProcedureName": "[[dbo].[prc_get_campaigns_adextension]",
-											"storedProcedureParameters": {
-												"duration": {
-													"type": "Int32",
-													"value": "1"
-												}
-											},
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"dataset": {
-											"referenceName": "DS_Dynamic_LsAds",
-											"type": "DatasetReference",
-											"parameters": {
-												"ds_db_param": {
-													"value": "@item()",
-													"type": "Expression"
-												}
-											}
-										},
-										"firstRowOnly": false
-									}
-								},
-								{
-									"name": "var_campaigns_array",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "AdExpireCampaigns",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "campaigns_array",
-										"value": {
-											"value": "@array(activity('AdExpireCampaigns').output.value)",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "var_campaigns_commaseparate",
-									"type": "SetVariable",
-									"dependsOn": [
-										{
-											"activity": "var_campaigns_array",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"userProperties": [],
-									"typeProperties": {
-										"variableName": "campaigns_commaseparate",
-										"value": {
-											"value": "@replace(replace(join(variables('campaigns_array'),','),'{\"campaignid\":',''),'}','')",
-											"type": "Expression"
-										}
-									}
-								},
-								{
-									"name": "ValidateCampaigns",
-									"type": "Lookup",
-									"dependsOn": [
-										{
-											"activity": "var_campaigns_commaseparate",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "0.00:05:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"source": {
-											"type": "SqlServerSource",
-											"sqlReaderStoredProcedureName": "[[dbo].[prc_get_campaigns]",
-											"storedProcedureParameters": {
-												"validatecampaignids": {
-													"type": "String",
-													"value": {
-														"value": "@variables('campaigns_commaseparate')",
-														"type": "Expression"
-													}
-												}
-											},
-											"queryTimeout": "02:00:00",
-											"partitionOption": "None"
-										},
-										"dataset": {
-											"referenceName": "DS_Dynamic_CRM",
-											"type": "DatasetReference",
-											"parameters": {
-												"ds_db_param": "venus"
-											}
-										},
-										"firstRowOnly": false
-									}
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"dbnames_array": {
-						"type": "Array"
-					},
-					"campaigns_array": {
-						"type": "Array"
-					},
-					"campaigns_commaseparate": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "LsAds"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-01-22T07:02:36Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_LsAds')]",
-				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_CRM')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/BusinessProfileHealthHistory')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This PL is used to populate data for this history table - businessprofilehealthhistory",
-				"activities": [
-					{
-						"name": "Get Customers",
-						"type": "Lookup",
+						"name": "prc_mng_autoscale",
+						"type": "SqlServerStoredProcedure",
 						"dependsOn": [],
 						"policy": {
 							"timeout": "0.00:10:00",
@@ -1137,69 +964,17 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[dbo].[prc_get_promanagecustomers]",
-								"queryTimeout": "00:10:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "DS_Dynamic_YP",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "Populate History Data for Each Customer",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "Get Customers",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('Get Customers').output.value",
-								"type": "Expression"
-							},
-							"activities": [
-								{
-									"name": "Populate Business Health History",
-									"description": "This component is used to populate the data for businessprofilehealthhistory using  the proc - prc_populate_businessprofilehealthhistory",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "0.00:15:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[prc_populate_businessprofilehealthhistory]",
-										"storedProcedureParameters": {
-											"customerid": {
-												"value": {
-													"value": "@item().customerid",
-													"type": "Expression"
-												},
-												"type": "Int32"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "LNKYPAzure",
-										"type": "LinkedServiceReference"
-									}
+							"storedProcedureName": "[[dbo].[prc_test_adf]",
+							"storedProcedureParameters": {
+								"performancelevel": {
+									"value": "P2",
+									"type": "String"
 								}
-							]
+							}
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKLeadX",
+							"type": "LinkedServiceReference"
 						}
 					}
 				],
@@ -1208,14 +983,12 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LeadX"
 				},
-				"annotations": [],
-				"lastPublishTime": "2022-01-18T13:20:54Z"
+				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_YP')]",
-				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+				"[concat(variables('factoryId'), '/linkedServices/LNKLeadX')]"
 			]
 		}
 	]

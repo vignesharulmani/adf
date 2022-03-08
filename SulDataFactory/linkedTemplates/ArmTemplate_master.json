@@ -27,6 +27,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure_Unencrypt'"
 		},
+		"LNKLeadX_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKLeadX'"
+		},
 		"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
 			"type": "string",
 			"defaultValue": "https://lslistings-dotnetcore5-qa.azurewebsites.net/api/business/GetRedisBusinessInfo"
@@ -72,6 +76,9 @@
 					},
 					"LNKYPAzure_Unencrypt_connectionString": {
 						"value": "[parameters('LNKYPAzure_Unencrypt_connectionString')]"
+					},
+					"LNKLeadX_connectionString": {
+						"value": "[parameters('LNKLeadX_connectionString')]"
 					},
 					"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
 						"value": "[parameters('LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url')]"
