@@ -1,0 +1,33 @@
+{
+	"name": "PopulateDemoData",
+	"properties": {
+		"description": "This PL is used to populate demo data for customer : Gracie Electricals",
+		"activities": [
+			{
+				"name": "Populate Demo Data",
+				"description": "This component is used to populate demo data for \"Gracie Electricals\" from \"SCUF\"  via this proc - prc_populate_promanage_demodata",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "7.00:00:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[prc_populate_promanage_demodata]"
+				},
+				"linkedServiceName": {
+					"referenceName": "LNKYPAzure",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "YP/ProManage"
+		},
+		"annotations": []
+	}
+}

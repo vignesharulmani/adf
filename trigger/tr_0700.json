@@ -1,0 +1,24 @@
+{
+	"name": "tr_0700",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [
+			{
+				"pipelineReference": {
+					"referenceName": "PopulateDemoData",
+					"type": "PipelineReference"
+				}
+			}
+		],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2022-03-17T07:00:00Z",
+				"timeZone": "UTC"
+			}
+		}
+	}
+}
