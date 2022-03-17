@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKLSAds_Dynamic_Unencrypt'"
 		},
+		"LNKLeadX_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKLeadX'"
+		},
 		"LNKYPAzure_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure'"
@@ -26,10 +30,6 @@
 		"LNKYPAzure_Unencrypt_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure_Unencrypt'"
-		},
-		"LNKLeadX_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'LNKLeadX'"
 		},
 		"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
 			"type": "string",
@@ -96,6 +96,19 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/LNKLeadX')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LNKLeadX_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LNKYPAzure')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -141,19 +154,6 @@
 					"url": "[parameters('LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url')]",
 					"enableServerCertificateValidation": true,
 					"authenticationType": "Anonymous"
-				}
-			},
-			"dependsOn": []
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/LNKLeadX')]",
-			"type": "Microsoft.DataFactory/factories/linkedServices",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"type": "AzureSqlDatabase",
-				"typeProperties": {
-					"connectionString": "[parameters('LNKLeadX_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -946,17 +946,19 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/AutoScale')]",
+			"name": "[concat(parameters('factoryName'), '/PopulateDemoData')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
 			"properties": {
+				"description": "This PL is used to populate demo data for customer : Gracie Electricals",
 				"activities": [
 					{
-						"name": "prc_mng_autoscale",
+						"name": "Populate Demo Data",
+						"description": "This component is used to populate demo data for \"Gracie Electricals\" from \"SCUF\"  via this proc - prc_populate_promanage_demodata",
 						"type": "SqlServerStoredProcedure",
 						"dependsOn": [],
 						"policy": {
-							"timeout": "0.00:10:00",
+							"timeout": "7.00:00:00",
 							"retry": 0,
 							"retryIntervalInSeconds": 30,
 							"secureOutput": false,
@@ -964,16 +966,10 @@
 						},
 						"userProperties": [],
 						"typeProperties": {
-							"storedProcedureName": "[[dbo].[prc_mng_autoscale]",
-							"storedProcedureParameters": {
-								"performancelevel": {
-									"value": "P2",
-									"type": "String"
-								}
-							}
+							"storedProcedureName": "[[dbo].[prc_populate_promanage_demodata]"
 						},
 						"linkedServiceName": {
-							"referenceName": "LNKLeadX",
+							"referenceName": "LNKYPAzure",
 							"type": "LinkedServiceReference"
 						}
 					}
@@ -983,12 +979,12 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "LeadX"
+					"name": "YP/ProManage"
 				},
 				"annotations": []
 			},
 			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LNKLeadX')]"
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
 			]
 		}
 	]

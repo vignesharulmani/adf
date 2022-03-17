@@ -905,7 +905,7 @@
 			"dependsOn": []
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/tr_oneuse_2355')]",
+			"name": "[concat(parameters('factoryName'), '/tr_0700')]",
 			"type": "Microsoft.DataFactory/factories/triggers",
 			"apiVersion": "2018-06-01",
 			"properties": {
@@ -914,7 +914,7 @@
 				"pipelines": [
 					{
 						"pipelineReference": {
-							"referenceName": "AutoScale",
+							"referenceName": "PopulateDemoData",
 							"type": "PipelineReference"
 						},
 						"parameters": {}
@@ -925,9 +925,8 @@
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
-						"startTime": "2022-03-08T23:55:00",
-						"endTime": "2022-03-09T14:16:00",
-						"timeZone": "India Standard Time",
+						"startTime": "2022-03-17T07:00:00Z",
+						"timeZone": "UTC",
 						"schedule": {}
 					}
 				}

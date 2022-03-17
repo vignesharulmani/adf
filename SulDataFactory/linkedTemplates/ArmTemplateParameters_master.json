@@ -14,13 +14,13 @@
 		"LNKLSAds_Dynamic_Unencrypt_connectionString": {
 			"value": ""
 		},
+		"LNKLeadX_connectionString": {
+			"value": ""
+		},
 		"LNKYPAzure_connectionString": {
 			"value": ""
 		},
 		"LNKYPAzure_Unencrypt_connectionString": {
-			"value": ""
-		},
-		"LNKLeadX_connectionString": {
 			"value": ""
 		},
 		"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {

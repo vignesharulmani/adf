@@ -19,6 +19,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKLSAds_Dynamic_Unencrypt'"
 		},
+		"LNKLeadX_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKLeadX'"
+		},
 		"LNKYPAzure_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure'"
@@ -26,10 +30,6 @@
 		"LNKYPAzure_Unencrypt_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure_Unencrypt'"
-		},
-		"LNKLeadX_connectionString": {
-			"type": "secureString",
-			"metadata": "Secure string for 'connectionString' of 'LNKLeadX'"
 		},
 		"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
 			"type": "string",
@@ -71,14 +71,14 @@
 					"LNKLSAds_Dynamic_Unencrypt_connectionString": {
 						"value": "[parameters('LNKLSAds_Dynamic_Unencrypt_connectionString')]"
 					},
+					"LNKLeadX_connectionString": {
+						"value": "[parameters('LNKLeadX_connectionString')]"
+					},
 					"LNKYPAzure_connectionString": {
 						"value": "[parameters('LNKYPAzure_connectionString')]"
 					},
 					"LNKYPAzure_Unencrypt_connectionString": {
 						"value": "[parameters('LNKYPAzure_Unencrypt_connectionString')]"
-					},
-					"LNKLeadX_connectionString": {
-						"value": "[parameters('LNKLeadX_connectionString')]"
 					},
 					"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
 						"value": "[parameters('LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url')]"
