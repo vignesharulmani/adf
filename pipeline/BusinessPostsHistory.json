@@ -1,0 +1,33 @@
+{
+	"name": "BusinessPostsHistory",
+	"properties": {
+		"description": "This PL is used to populate this table businessposthistory.",
+		"activities": [
+			{
+				"name": "Populate Business Post History",
+				"description": "This component is used to execute this procedure - prc_populate_businesspostshistory",
+				"type": "SqlServerStoredProcedure",
+				"dependsOn": [],
+				"policy": {
+					"timeout": "0.00:10:00",
+					"retry": 0,
+					"retryIntervalInSeconds": 30,
+					"secureOutput": false,
+					"secureInput": false
+				},
+				"userProperties": [],
+				"typeProperties": {
+					"storedProcedureName": "[dbo].[prc_populate_businesspostshistory]"
+				},
+				"linkedServiceName": {
+					"referenceName": "LNKYPAzure",
+					"type": "LinkedServiceReference"
+				}
+			}
+		],
+		"folder": {
+			"name": "YP/ProManage"
+		},
+		"annotations": []
+	}
+}
