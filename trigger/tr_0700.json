@@ -16,8 +16,16 @@
 			"recurrence": {
 				"frequency": "Day",
 				"interval": 1,
-				"startTime": "2022-03-17T07:00:00",
-				"timeZone": "India Standard Time"
+				"startTime": "2022-03-17T07:00:01",
+				"timeZone": "India Standard Time",
+				"schedule": {
+					"minutes": [
+						1
+					],
+					"hours": [
+						7
+					]
+				}
 			}
 		}
 	}
