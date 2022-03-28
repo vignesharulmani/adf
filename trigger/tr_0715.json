@@ -1,0 +1,17 @@
+{
+	"name": "tr_0715",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2022-03-29T07:15:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}
