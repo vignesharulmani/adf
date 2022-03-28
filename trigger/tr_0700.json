@@ -2,7 +2,7 @@
 	"name": "tr_0700",
 	"properties": {
 		"annotations": [],
-		"runtimeState": "Started",
+		"runtimeState": "Stopped",
 		"pipelines": [],
 		"type": "ScheduleTrigger",
 		"typeProperties": {
@@ -10,15 +10,7 @@
 				"frequency": "Day",
 				"interval": 1,
 				"startTime": "2022-03-17T07:00:01",
-				"timeZone": "India Standard Time",
-				"schedule": {
-					"minutes": [
-						1
-					],
-					"hours": [
-						7
-					]
-				}
+				"timeZone": "India Standard Time"
 			}
 		}
 	}
