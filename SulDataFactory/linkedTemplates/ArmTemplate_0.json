@@ -159,6 +159,27 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/tr_0700')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Stopped",
+				"pipelines": [],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-03-17T07:00:01",
+						"timeZone": "India Standard Time",
+						"schedule": {}
+					}
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/AdExpiryProcess')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -676,6 +697,48 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/PopulateDemoData')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to populate demo data for customer : Gracie Electricals",
+				"activities": [
+					{
+						"name": "Populate Demo Data",
+						"description": "This component is used to populate demo data for \"Gracie Electricals\" from \"SCUF\"  via this proc - prc_populate_promanage_demodata",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "7.00:00:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[prc_populate_promanage_demodata]"
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKYPAzure",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/PrepareDashboardForCMO')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -908,83 +971,6 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure_Unencrypt')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/DS_RestAPI_RedisBusinessInfo')]",
-			"type": "Microsoft.DataFactory/factories/datasets",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"linkedServiceName": {
-					"referenceName": "LNK_RestAPI_RedisBusinessInfo",
-					"type": "LinkedServiceReference",
-					"parameters": {
-						"BusinessId": "10204462"
-					}
-				},
-				"parameters": {
-					"BusinessId": {
-						"type": "string",
-						"defaultValue": "10204462"
-					}
-				},
-				"folder": {
-					"name": "YP"
-				},
-				"annotations": [],
-				"type": "RestResource",
-				"typeProperties": {
-					"relativeUrl": {
-						"value": "@concat('?BusinessId=',dataset().BusinessId)",
-						"type": "Expression"
-					}
-				},
-				"schema": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LNK_RestAPI_RedisBusinessInfo')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PopulateDemoData')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This PL is used to populate demo data for customer : Gracie Electricals",
-				"activities": [
-					{
-						"name": "Populate Demo Data",
-						"description": "This component is used to populate demo data for \"Gracie Electricals\" from \"SCUF\"  via this proc - prc_populate_promanage_demodata",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[prc_populate_promanage_demodata]"
-						},
-						"linkedServiceName": {
-							"referenceName": "LNKYPAzure",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "YP/ProManage"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
 			]
 		}
 	]
