@@ -172,8 +172,7 @@
 						"frequency": "Day",
 						"interval": 1,
 						"startTime": "2022-03-17T07:00:01",
-						"timeZone": "India Standard Time",
-						"schedule": {}
+						"timeZone": "India Standard Time"
 					}
 				}
 			},
@@ -578,6 +577,48 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/BusinessPostsHistory')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to populate this table businessposthistory.",
+				"activities": [
+					{
+						"name": "Populate Business Post History",
+						"description": "This component is used to execute this procedure - prc_populate_businesspostshistory",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[prc_populate_businesspostshistory]"
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKYPAzure",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/FixBusinessScore')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -733,49 +774,6 @@
 					"name": "YP/ProManage"
 				},
 				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/PrepareDashboardForCMO')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This PL is used to populate specific customer promanage dashboard data for superadmin users.",
-				"activities": [
-					{
-						"name": "Populate UserBusinessMapping",
-						"description": "This component is used to populate data into this table - userbusinessmapping via this proc - prc_prepare_promanagedashboard_superadmin",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:05:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[prc_prepare_promanagedashboard_superadmin]"
-						},
-						"linkedServiceName": {
-							"referenceName": "LNKYPAzure",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "YP/ProManage"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-01-21T06:04:19Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"

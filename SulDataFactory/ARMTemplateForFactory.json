@@ -628,6 +628,48 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/BusinessPostsHistory')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to populate this table businessposthistory.",
+				"activities": [
+					{
+						"name": "Populate Business Post History",
+						"description": "This component is used to execute this procedure - prc_populate_businesspostshistory",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[prc_populate_businesspostshistory]"
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKYPAzure",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/BusinessProfileHealthHistory')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1531,49 +1573,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/PrepareDashboardForCMO')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This PL is used to populate specific customer promanage dashboard data for superadmin users.",
-				"activities": [
-					{
-						"name": "Populate UserBusinessMapping",
-						"description": "This component is used to populate data into this table - userbusinessmapping via this proc - prc_prepare_promanagedashboard_superadmin",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:05:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[prc_prepare_promanagedashboard_superadmin]"
-						},
-						"linkedServiceName": {
-							"referenceName": "LNKYPAzure",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "YP/ProManage"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-01-21T06:04:19Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ReviewCountStats')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2135,12 +2134,41 @@
 						"frequency": "Day",
 						"interval": 1,
 						"startTime": "2022-03-17T07:00:01",
-						"timeZone": "India Standard Time",
-						"schedule": {}
+						"timeZone": "India Standard Time"
 					}
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_0715')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "PopulateDemoData",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-03-29T07:15:00",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/PopulateDemoData')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/tr_1000')]",
@@ -2238,8 +2266,7 @@
 						"frequency": "Day",
 						"interval": 1,
 						"startTime": "2022-01-10T22:30:00",
-						"timeZone": "India Standard Time",
-						"schedule": {}
+						"timeZone": "India Standard Time"
 					}
 				}
 			},
@@ -2285,79 +2312,6 @@
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_RestAPI_RedisBusinessInfo')]",
 				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure_Unencrypt')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/tr_0715')]",
-			"type": "Microsoft.DataFactory/factories/triggers",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "PopulateDemoData",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
-				"type": "ScheduleTrigger",
-				"typeProperties": {
-					"recurrence": {
-						"frequency": "Day",
-						"interval": 1,
-						"startTime": "2022-03-29T07:15:00",
-						"timeZone": "India Standard Time",
-						"schedule": {}
-					}
-				}
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/PopulateDemoData')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/BusinessPostsHistory')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This PL is used to populate this table businessposthistory.",
-				"activities": [
-					{
-						"name": "Populate Business Post History",
-						"description": "This component is used to execute this procedure - prc_populate_businesspostshistory",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[prc_populate_businesspostshistory]"
-						},
-						"linkedServiceName": {
-							"referenceName": "LNKYPAzure",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "YP/ProManage"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
 			]
 		}
 	]
