@@ -33,14 +33,7 @@
 			{
 				"name": "Get Users",
 				"type": "Lookup",
-				"dependsOn": [
-					{
-						"activity": "Get Relataed Needs",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.00:05:00",
 					"retry": 0,
@@ -57,14 +50,14 @@
 							"daysofinterval": {
 								"type": "Int32",
 								"value": {
-									"value": "@activity('Get Relataed Needs').output.value[4]",
+									"value": "3",
 									"type": "Expression"
 								}
 							},
 							"needid": {
 								"type": "Int32",
 								"value": {
-									"value": "@activity('Get Relataed Needs').output.value[1]",
+									"value": "62300",
 									"type": "Expression"
 								}
 							}
@@ -76,7 +69,7 @@
 						"referenceName": "DS_Dynamic_DW",
 						"type": "DatasetReference",
 						"parameters": {
-							"ds_db_param": "ypuseranalysis"
+							"ds_db_param": "YPUserAnalysis"
 						}
 					}
 				}
