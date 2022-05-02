@@ -27,7 +27,8 @@
 						"parameters": {
 							"ds_db_param": "webengage"
 						}
-					}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
