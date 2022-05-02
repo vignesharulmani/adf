@@ -1,0 +1,17 @@
+{
+	"name": "DS_Dynamic_UE_Webengage",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LNKUE_Webengage",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"ds_db_param": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "AzureSqlTable",
+		"schema": []
+	}
+}
