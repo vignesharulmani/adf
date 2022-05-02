@@ -34,14 +34,7 @@
 			{
 				"name": "Get Users",
 				"type": "Lookup",
-				"dependsOn": [
-					{
-						"activity": "Get Relataed Needs",
-						"dependencyConditions": [
-							"Succeeded"
-						]
-					}
-				],
+				"dependsOn": [],
 				"policy": {
 					"timeout": "0.00:05:00",
 					"retry": 0,
@@ -58,14 +51,14 @@
 							"daysofinterval": {
 								"type": "Int32",
 								"value": {
-									"value": "@activity('Get Relataed Needs').output.value[4]['needid']",
+									"value": "3",
 									"type": "Expression"
 								}
 							},
 							"needid": {
 								"type": "Int32",
 								"value": {
-									"value": "@activity('Get Relataed Needs').output.value['needid']",
+									"value": "62300",
 									"type": "Expression"
 								}
 							}
