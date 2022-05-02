@@ -58,7 +58,7 @@
 							"daysofinterval": {
 								"type": "Int32",
 								"value": {
-									"value": "@activity('Get Relataed Needs').output.value['daysofinterval']",
+									"value": "@activity('Get Relataed Needs').output.value[4]['needid']",
 									"type": "Expression"
 								}
 							},
