@@ -33,7 +33,14 @@
 			{
 				"name": "Get Users",
 				"type": "Lookup",
-				"dependsOn": [],
+				"dependsOn": [
+					{
+						"activity": "Get Relataed Needs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
 				"policy": {
 					"timeout": "0.00:05:00",
 					"retry": 0,
@@ -49,7 +56,10 @@
 						"storedProcedureParameters": {
 							"daysofinterval": {
 								"type": "Int32",
-								"value": "3"
+								"value": {
+									"value": "@activity('Get Relataed Needs').output.value[4]",
+									"type": "Expression"
+								}
 							},
 							"needid": {
 								"type": "Int32",
