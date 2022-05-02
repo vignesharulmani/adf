@@ -63,7 +63,10 @@
 							},
 							"needid": {
 								"type": "Int32",
-								"value": "62300"
+								"value": {
+									"value": "@activity('Get Relataed Needs').output.value[1]",
+									"type": "Expression"
+								}
 							}
 						},
 						"queryTimeout": "02:00:00",
