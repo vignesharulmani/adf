@@ -1,0 +1,17 @@
+{
+	"name": "DS_Dynamic_DW",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LNKDW_Dynamic",
+			"type": "LinkedServiceReference"
+		},
+		"parameters": {
+			"ds_db_param": {
+				"type": "string"
+			}
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	}
+}
