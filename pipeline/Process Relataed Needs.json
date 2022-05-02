@@ -71,8 +71,33 @@
 						"type": "DatasetReference"
 					}
 				}
+			},
+			{
+				"name": "var_relatedneeds",
+				"type": "SetVariable",
+				"dependsOn": [
+					{
+						"activity": "Get Relataed Needs",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"variableName": "vRelatedNeeds",
+					"value": {
+						"value": "@activity('Get Relataed Needs').output.value",
+						"type": "Expression"
+					}
+				}
 			}
 		],
+		"variables": {
+			"vRelatedNeeds": {
+				"type": "Array"
+			}
+		},
 		"folder": {
 			"name": "UE"
 		},
