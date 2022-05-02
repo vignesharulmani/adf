@@ -49,28 +49,19 @@
 						"storedProcedureParameters": {
 							"daysofinterval": {
 								"type": "Int32",
-								"value": {
-									"value": "3",
-									"type": "Expression"
-								}
+								"value": "3"
 							},
 							"needid": {
 								"type": "Int32",
-								"value": {
-									"value": "62300",
-									"type": "Expression"
-								}
+								"value": "62300"
 							}
 						},
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
 					"dataset": {
-						"referenceName": "DS_Dynamic_DW",
-						"type": "DatasetReference",
-						"parameters": {
-							"ds_db_param": "YPUserAnalysis"
-						}
+						"referenceName": "DS_YPUserAnalysis",
+						"type": "DatasetReference"
 					}
 				}
 			}

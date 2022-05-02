@@ -1,0 +1,12 @@
+{
+	"name": "DS_YPUserAnalysis",
+	"properties": {
+		"linkedServiceName": {
+			"referenceName": "LNKYPUserAnalysis",
+			"type": "LinkedServiceReference"
+		},
+		"annotations": [],
+		"type": "SqlServerTable",
+		"schema": []
+	}
+}
