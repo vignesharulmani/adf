@@ -25,7 +25,8 @@
 					"dataset": {
 						"referenceName": "DS_Dynamic_YP",
 						"type": "DatasetReference"
-					}
+					},
+					"firstRowOnly": false
 				}
 			},
 			{
