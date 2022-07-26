@@ -152,7 +152,7 @@
 								"storedProcedureParameters": {
 									"customerid": {
 										"value": {
-											"value": "@variables('var_customerid_string')",
+											"value": "@int(variables('var_customerid_string'))",
 											"type": "Expression"
 										},
 										"type": "Int32"
