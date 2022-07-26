@@ -27,8 +27,113 @@
 						"type": "DatasetReference"
 					}
 				}
+			},
+			{
+				"name": "Find and Update SyncDate",
+				"type": "ForEach",
+				"dependsOn": [
+					{
+						"activity": "Get Customers",
+						"dependencyConditions": [
+							"Succeeded"
+						]
+					}
+				],
+				"userProperties": [],
+				"typeProperties": {
+					"items": {
+						"value": "@activity('Get Customers').output.value",
+						"type": "Expression"
+					},
+					"batchCount": 10,
+					"activities": [
+						{
+							"name": "Find Max InsightDate",
+							"description": "This component is used to execute this proc - prc_find_maxinsightdate_promangecustomer to find max of insightdate for that customer",
+							"type": "Lookup",
+							"dependsOn": [],
+							"policy": {
+								"timeout": "0.00:05:00",
+								"retry": 0,
+								"retryIntervalInSeconds": 30,
+								"secureOutput": false,
+								"secureInput": false
+							},
+							"userProperties": [],
+							"typeProperties": {
+								"source": {
+									"type": "AzureSqlSource",
+									"sqlReaderStoredProcedureName": "[dbo].[prc_find_maxinsightdate_promangecustomer]",
+									"storedProcedureParameters": {
+										"customerid": {
+											"type": "Int32",
+											"value": {
+												"value": "@item().customerid",
+												"type": "Expression"
+											}
+										}
+									},
+									"queryTimeout": "02:00:00",
+									"partitionOption": "None"
+								},
+								"dataset": {
+									"referenceName": "DS_Dynamic_YP",
+									"type": "DatasetReference"
+								}
+							}
+						},
+						{
+							"name": "Max InsightDate",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Find Max InsightDate",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "var_customerid_string",
+								"value": {
+									"value": "@activity('Find Max InsightDate').output.value",
+									"type": "Expression"
+								}
+							}
+						},
+						{
+							"name": "Assign CustomerId",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Find Max InsightDate",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "var_customerid_string",
+								"value": {
+									"value": "@item().customerid",
+									"type": "Expression"
+								}
+							}
+						}
+					]
+				}
 			}
 		],
+		"variables": {
+			"var_insightdate_string": {
+				"type": "String"
+			},
+			"var_customerid_string": {
+				"type": "String"
+			}
+		},
 		"folder": {
 			"name": "YP/ProManage"
 		},
