@@ -183,9 +183,6 @@
 			},
 			"var_customerid_string": {
 				"type": "String"
-			},
-			"var_customerid_array": {
-				"type": "Array"
 			}
 		},
 		"folder": {
