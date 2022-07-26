@@ -98,7 +98,7 @@
 							"typeProperties": {
 								"variableName": "var_customerid_array",
 								"value": {
-									"value": "@activity('Find Max InsightDate').output.value",
+									"value": "@activity('Find Max InsightDate').output.maxinsightdate",
 									"type": "Expression"
 								}
 							}
