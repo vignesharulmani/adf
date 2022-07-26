@@ -64,7 +64,7 @@
 							"typeProperties": {
 								"source": {
 									"type": "AzureSqlSource",
-									"sqlReaderStoredProcedureName": "[dbo].[prc_find_maxinsightdate_promangecustomer]",
+									"sqlReaderStoredProcedureName": "[dbo].[prc_find_maxinsightdate_promangecustomer_v2]",
 									"storedProcedureParameters": {
 										"customerid": {
 											"type": "Int32",
