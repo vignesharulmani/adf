@@ -178,10 +178,10 @@
 			}
 		],
 		"variables": {
-			"var_insightdate_string": {
+			"var_customerid_string": {
 				"type": "String"
 			},
-			"var_customerid_string": {
+			"var_insightdate_string": {
 				"type": "String"
 			}
 		},
