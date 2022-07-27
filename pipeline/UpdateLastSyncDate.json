@@ -161,10 +161,10 @@
 									},
 									"lastsyncdate": {
 										"value": {
-											"value": "@variables('var_insightdate_array')",
+											"value": "@variables('var_insightdate_array')[0]",
 											"type": "Expression"
 										},
-										"type": "Datetimeoffset"
+										"type": "Datetime"
 									}
 								}
 							},
