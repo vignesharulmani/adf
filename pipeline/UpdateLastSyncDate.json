@@ -97,9 +97,9 @@
 							],
 							"userProperties": [],
 							"typeProperties": {
-								"variableName": "var_insightdate_string",
+								"variableName": "var_insightdate_array",
 								"value": {
-									"value": "@string(activity('Find Max InsightDate').output.value)",
+									"value": "@activity('Find Max InsightDate').output.value[0]",
 									"type": "Expression"
 								}
 							}
@@ -181,8 +181,8 @@
 			"var_customerid_string": {
 				"type": "String"
 			},
-			"var_insightdate_string": {
-				"type": "String"
+			"var_insightdate_array": {
+				"type": "Array"
 			}
 		},
 		"folder": {
