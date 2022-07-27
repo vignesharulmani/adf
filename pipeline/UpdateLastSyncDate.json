@@ -179,7 +179,8 @@
 		],
 		"variables": {
 			"var_insightdate_string": {
-				"type": "String"
+				"type": "String",
+				"defaultValue": "1900-01-01"
 			},
 			"var_customerid_string": {
 				"type": "String"
