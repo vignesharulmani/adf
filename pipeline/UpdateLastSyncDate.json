@@ -99,7 +99,7 @@
 							"typeProperties": {
 								"variableName": "var_insightdate_string",
 								"value": {
-									"value": "@formatDateTime(string(activity('Find Max InsightDate').output.value),'yyyy-MM-ddTHH:mmZ')",
+									"value": "@formatDateTime(string(activity('Find Max InsightDate').output.value),'o')",
 									"type": "Expression"
 								}
 							}
