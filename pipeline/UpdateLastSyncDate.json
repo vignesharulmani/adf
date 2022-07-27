@@ -18,7 +18,7 @@
 				"typeProperties": {
 					"source": {
 						"type": "AzureSqlSource",
-						"sqlReaderStoredProcedureName": "[dbo].[prc_get_lastsyncdate_promanagecustomers]",
+						"sqlReaderStoredProcedureName": "[dbo].[prc_get_lastsyncdate_promanagecustomers_v2]",
 						"queryTimeout": "02:00:00",
 						"partitionOption": "None"
 					},
