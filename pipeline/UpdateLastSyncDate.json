@@ -99,7 +99,7 @@
 							"typeProperties": {
 								"variableName": "var_insightdate_string",
 								"value": {
-									"value": "@string(activity('Find Max InsightDate').output.value)",
+									"value": "@formatDateTime(string(activity('Find Max InsightDate').output.value[0].maxinsightdate),'yyyy-MM-dd HH:mm:ss')",
 									"type": "Expression"
 								}
 							}
@@ -122,75 +122,6 @@
 									"value": "@string(item().customerid)",
 									"type": "Expression"
 								}
-							}
-						},
-						{
-							"name": "Formatted InsightDate",
-							"type": "SetVariable",
-							"dependsOn": [
-								{
-									"activity": "Max InsightDate",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"userProperties": [],
-							"typeProperties": {
-								"variableName": "var_insightdate_formattedstring",
-								"value": {
-									"value": "@replace(replace(variables('var_insightdate_string'),'{\"maxinsightdate\":',''),'T00:00:00\"}','\"')",
-									"type": "Expression"
-								}
-							}
-						},
-						{
-							"name": "Update LastSyncDate",
-							"type": "SqlServerStoredProcedure",
-							"dependsOn": [
-								{
-									"activity": "Formatted InsightDate",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								},
-								{
-									"activity": "Assign CustomerId",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "0.00:05:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"storedProcedureName": "[dbo].[prc_update_lastsyncdate_promanagecustomers_v2]",
-								"storedProcedureParameters": {
-									"customerid": {
-										"value": {
-											"value": "@int(variables('var_customerid_string'))",
-											"type": "Expression"
-										},
-										"type": "Int32"
-									},
-									"lastsyncdate": {
-										"value": {
-											"value": "@variables('var_insightdate_formattedstring')",
-											"type": "Expression"
-										},
-										"type": "DateTime"
-									}
-								}
-							},
-							"linkedServiceName": {
-								"referenceName": "LNKYPAzure",
-								"type": "LinkedServiceReference"
 							}
 						}
 					]
