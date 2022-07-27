@@ -123,6 +123,26 @@
 									"type": "Expression"
 								}
 							}
+						},
+						{
+							"name": "Formatted InsightDate",
+							"type": "SetVariable",
+							"dependsOn": [
+								{
+									"activity": "Max InsightDate",
+									"dependencyConditions": [
+										"Succeeded"
+									]
+								}
+							],
+							"userProperties": [],
+							"typeProperties": {
+								"variableName": "var_insightdate_formattedstring",
+								"value": {
+									"value": "@formatDateTime(variables('var_insightdate_string'),'o')",
+									"type": "Expression"
+								}
+							}
 						}
 					]
 				}
@@ -133,6 +153,10 @@
 				"type": "String"
 			},
 			"var_insightdate_string": {
+				"type": "String",
+				"defaultValue": "1900-01-01"
+			},
+			"var_insightdate_formattedstring": {
 				"type": "String",
 				"defaultValue": "1900-01-01"
 			}
