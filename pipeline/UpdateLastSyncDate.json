@@ -164,7 +164,7 @@
 											"value": "@variables('var_insightdate_string')",
 											"type": "Expression"
 										},
-										"type": "String"
+										"type": "Datetimeoffset"
 									}
 								}
 							},
