@@ -99,7 +99,7 @@
 							"typeProperties": {
 								"variableName": "var_insightdate_string",
 								"value": {
-									"value": "@activity('Find Max InsightDate').output.value",
+									"value": "@string(activity('Find Max InsightDate').output.value)",
 									"type": "Expression"
 								}
 							}
@@ -122,55 +122,6 @@
 									"value": "@string(item().customerid)",
 									"type": "Expression"
 								}
-							}
-						},
-						{
-							"name": "Update LastSyncDate Against CustomerId",
-							"type": "SqlServerStoredProcedure",
-							"dependsOn": [
-								{
-									"activity": "Max InsightDate",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								},
-								{
-									"activity": "Assign CustomerId",
-									"dependencyConditions": [
-										"Succeeded"
-									]
-								}
-							],
-							"policy": {
-								"timeout": "0.00:05:00",
-								"retry": 0,
-								"retryIntervalInSeconds": 30,
-								"secureOutput": false,
-								"secureInput": false
-							},
-							"userProperties": [],
-							"typeProperties": {
-								"storedProcedureName": "[dbo].[prc_update_lastsyncdate_promanagecustomers_v2]",
-								"storedProcedureParameters": {
-									"customerid": {
-										"value": {
-											"value": "@int(variables('var_customerid_string'))",
-											"type": "Expression"
-										},
-										"type": "Int32"
-									},
-									"lastsyncdate": {
-										"value": {
-											"value": "@formatDateTime(variables('var_insightdate_string'),'yyyy-MM-dd')",
-											"type": "Expression"
-										},
-										"type": "Datetime"
-									}
-								}
-							},
-							"linkedServiceName": {
-								"referenceName": "LNKYPAzure",
-								"type": "LinkedServiceReference"
 							}
 						}
 					]
