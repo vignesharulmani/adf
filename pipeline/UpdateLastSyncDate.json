@@ -150,7 +150,7 @@
 							},
 							"userProperties": [],
 							"typeProperties": {
-								"storedProcedureName": "[dbo].[prc_update_lastsyncdate_promanagecustomers]",
+								"storedProcedureName": "prc_update_lastsyncdate_promanagecustomers_v2",
 								"storedProcedureParameters": {
 									"customerid": {
 										"value": {
@@ -164,7 +164,7 @@
 											"value": "@variables('var_insightdate_string')",
 											"type": "Expression"
 										},
-										"type": "DateTime"
+										"type": "Datetime"
 									}
 								}
 							},
