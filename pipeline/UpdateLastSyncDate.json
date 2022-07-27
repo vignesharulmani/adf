@@ -161,7 +161,7 @@
 									},
 									"lastsyncdate": {
 										"value": {
-											"value": "@variables('var_insightdate_string')",
+											"value": "@variables('var_insightdate_array')",
 											"type": "Expression"
 										},
 										"type": "Datetimeoffset"
