@@ -139,7 +139,7 @@
 							"typeProperties": {
 								"variableName": "var_insightdate_formattedstring",
 								"value": {
-									"value": "@variables('var_insightdate_string')",
+									"value": "@formatDateTime(variables('var_insightdate_string'),'dd-MMM-yyyy hh:mm:ss tt')",
 									"type": "Expression"
 								}
 							}
