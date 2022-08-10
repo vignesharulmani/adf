@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKCRM_Dynamic'"
 		},
+		"LNKDW_Dynamic_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKDW_Dynamic'"
+		},
 		"LNKLSAds_Dynamic_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKLSAds_Dynamic'"
@@ -23,6 +27,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKLeadX'"
 		},
+		"LNKUE_Webengage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKUE_Webengage'"
+		},
 		"LNKYPAzure_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure'"
@@ -30,6 +38,10 @@
 		"LNKYPAzure_Unencrypt_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure_Unencrypt'"
+		},
+		"LNKYPUserAnalysis_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKYPUserAnalysis'"
 		},
 		"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
 			"type": "string",
@@ -1573,6 +1585,123 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/Process Relataed Needs')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "Get Relataed Needs",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:05:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[prc_get_relatedneeds]",
+								"queryTimeout": "00:05:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_Dynamic_UE_Webengage",
+								"type": "DatasetReference",
+								"parameters": {
+									"ds_db_param": "webengage"
+								}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Get Users",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:05:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "SqlServerSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[prc_get_uniqueuserleads]",
+								"storedProcedureParameters": {
+									"daysofinterval": {
+										"type": "Int32",
+										"value": {
+											"value": "3",
+											"type": "Expression"
+										}
+									},
+									"needid": {
+										"type": "Int32",
+										"value": {
+											"value": "62300",
+											"type": "Expression"
+										}
+									}
+								},
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_YPUserAnalysis",
+								"type": "DatasetReference",
+								"parameters": {}
+							}
+						}
+					},
+					{
+						"name": "var_relatedneeds",
+						"type": "SetVariable",
+						"dependsOn": [
+							{
+								"activity": "Get Relataed Needs",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"variableName": "vRelatedNeeds",
+							"value": {
+								"value": "@activity('Get Relataed Needs').output.value",
+								"type": "Expression"
+							}
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"vRelatedNeeds": {
+						"type": "Array"
+					}
+				},
+				"folder": {
+					"name": "UE"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_UE_Webengage')]",
+				"[concat(variables('factoryId'), '/datasets/DS_YPUserAnalysis')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/ReviewCountStats')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -1654,6 +1783,216 @@
 				"annotations": []
 			},
 			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/UpdateLastSyncDate')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to update lastsyncdate column in promanagecustomers table, based upon recent metrics collected date.",
+				"activities": [
+					{
+						"name": "Get Customers",
+						"type": "Lookup",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:05:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"source": {
+								"type": "AzureSqlSource",
+								"sqlReaderStoredProcedureName": "[[dbo].[prc_get_lastsyncdate_promanagecustomers_v2]",
+								"queryTimeout": "02:00:00",
+								"partitionOption": "None"
+							},
+							"dataset": {
+								"referenceName": "DS_Dynamic_YP",
+								"type": "DatasetReference",
+								"parameters": {}
+							},
+							"firstRowOnly": false
+						}
+					},
+					{
+						"name": "Find and Update SyncDate",
+						"type": "ForEach",
+						"dependsOn": [
+							{
+								"activity": "Get Customers",
+								"dependencyConditions": [
+									"Succeeded"
+								]
+							}
+						],
+						"userProperties": [],
+						"typeProperties": {
+							"items": {
+								"value": "@activity('Get Customers').output.value",
+								"type": "Expression"
+							},
+							"batchCount": 10,
+							"activities": [
+								{
+									"name": "Find Max InsightDate",
+									"description": "This component is used to execute this proc - prc_find_maxinsightdate_promangecustomer to find max of insightdate for that customer",
+									"type": "Lookup",
+									"dependsOn": [],
+									"policy": {
+										"timeout": "0.00:05:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"source": {
+											"type": "AzureSqlSource",
+											"sqlReaderStoredProcedureName": "[[dbo].[prc_find_maxinsightdate_promangecustomer_v2]",
+											"storedProcedureParameters": {
+												"customerid": {
+													"type": "Int32",
+													"value": {
+														"value": "@item().customerid",
+														"type": "Expression"
+													}
+												}
+											},
+											"queryTimeout": "02:00:00",
+											"partitionOption": "None"
+										},
+										"dataset": {
+											"referenceName": "DS_Dynamic_YP",
+											"type": "DatasetReference",
+											"parameters": {}
+										},
+										"firstRowOnly": false
+									}
+								},
+								{
+									"name": "Max InsightDate",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Find Max InsightDate",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "var_insightdate_string",
+										"value": {
+											"value": "@formatDateTime(string(activity('Find Max InsightDate').output.value[0].maxinsightdate),'yyyy-MM-dd HH:mm:ss')",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Assign CustomerId",
+									"type": "SetVariable",
+									"dependsOn": [
+										{
+											"activity": "Find Max InsightDate",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"userProperties": [],
+									"typeProperties": {
+										"variableName": "var_customerid_string",
+										"value": {
+											"value": "@string(item().customerid)",
+											"type": "Expression"
+										}
+									}
+								},
+								{
+									"name": "Update LastSyncDate",
+									"type": "SqlServerStoredProcedure",
+									"dependsOn": [
+										{
+											"activity": "Max InsightDate",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										},
+										{
+											"activity": "Assign CustomerId",
+											"dependencyConditions": [
+												"Succeeded"
+											]
+										}
+									],
+									"policy": {
+										"timeout": "0.00:05:00",
+										"retry": 0,
+										"retryIntervalInSeconds": 30,
+										"secureOutput": false,
+										"secureInput": false
+									},
+									"userProperties": [],
+									"typeProperties": {
+										"storedProcedureName": "[[dbo].[prc_update_lastsyncdate_promanagecustomers_v2]",
+										"storedProcedureParameters": {
+											"customerid": {
+												"value": {
+													"value": "@int(variables('var_customerid_string'))",
+													"type": "Expression"
+												},
+												"type": "Int32"
+											},
+											"lastsyncdate": {
+												"value": {
+													"value": "@variables('var_insightdate_string')",
+													"type": "Expression"
+												},
+												"type": "DateTime"
+											}
+										}
+									},
+									"linkedServiceName": {
+										"referenceName": "LNKYPAzure",
+										"type": "LinkedServiceReference"
+									}
+								}
+							]
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"variables": {
+					"var_customerid_string": {
+						"type": "String"
+					},
+					"var_insightdate_string": {
+						"type": "String",
+						"defaultValue": "1900-01-01"
+					},
+					"var_insightdate_formattedstring": {
+						"type": "String",
+						"defaultValue": "1900-01-01"
+					}
+				},
+				"folder": {
+					"name": "YP/ProManage"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_YP')]",
 				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
 			]
 		},
@@ -1846,6 +2185,29 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_Dynamic_DW')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LNKDW_Dynamic",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"ds_db_param": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKDW_Dynamic')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_Dynamic_LsAds')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -1875,6 +2237,29 @@
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LNKLSAds_Dynamic')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/DS_Dynamic_UE_Webengage')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LNKUE_Webengage",
+					"type": "LinkedServiceReference"
+				},
+				"parameters": {
+					"ds_db_param": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "AzureSqlTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKUE_Webengage')]"
 			]
 		},
 		{
@@ -1956,6 +2341,24 @@
 			]
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/DS_YPUserAnalysis')]",
+			"type": "Microsoft.DataFactory/factories/datasets",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"linkedServiceName": {
+					"referenceName": "LNKYPUserAnalysis",
+					"type": "LinkedServiceReference"
+				},
+				"annotations": [],
+				"type": "SqlServerTable",
+				"schema": [],
+				"typeProperties": {}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPUserAnalysis')]"
+			]
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LNKCRM_Dynamic')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -1969,6 +2372,24 @@
 				"type": "SqlServer",
 				"typeProperties": {
 					"connectionString": "[parameters('LNKCRM_Dynamic_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LNKDW_Dynamic')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"parameters": {
+					"dbname": {
+						"type": "string"
+					}
+				},
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('LNKDW_Dynamic_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -2024,6 +2445,19 @@
 			"dependsOn": []
 		},
 		{
+			"name": "[concat(parameters('factoryName'), '/LNKUE_Webengage')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "AzureSqlDatabase",
+				"typeProperties": {
+					"connectionString": "[parameters('LNKUE_Webengage_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/LNKYPAzure')]",
 			"type": "Microsoft.DataFactory/factories/linkedServices",
 			"apiVersion": "2018-06-01",
@@ -2049,6 +2483,19 @@
 				"type": "AzureSqlDatabase",
 				"typeProperties": {
 					"connectionString": "[parameters('LNKYPAzure_Unencrypt_connectionString')]"
+				}
+			},
+			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/LNKYPUserAnalysis')]",
+			"type": "Microsoft.DataFactory/factories/linkedServices",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"type": "SqlServer",
+				"typeProperties": {
+					"connectionString": "[parameters('LNKYPUserAnalysis_connectionString')]"
 				}
 			},
 			"dependsOn": []
@@ -2146,29 +2593,20 @@
 			"apiVersion": "2018-06-01",
 			"properties": {
 				"annotations": [],
-				"runtimeState": "Started",
-				"pipelines": [
-					{
-						"pipelineReference": {
-							"referenceName": "PopulateDemoData",
-							"type": "PipelineReference"
-						},
-						"parameters": {}
-					}
-				],
+				"runtimeState": "Stopped",
+				"pipelines": [],
 				"type": "ScheduleTrigger",
 				"typeProperties": {
 					"recurrence": {
 						"frequency": "Day",
 						"interval": 1,
 						"startTime": "2022-03-29T07:15:00",
-						"timeZone": "India Standard Time"
+						"timeZone": "India Standard Time",
+						"schedule": {}
 					}
 				}
 			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/PopulateDemoData')]"
-			]
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/tr_1000')]",

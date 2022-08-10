@@ -11,6 +11,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKCRM_Dynamic'"
 		},
+		"LNKDW_Dynamic_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKDW_Dynamic'"
+		},
 		"LNKLSAds_Dynamic_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKLSAds_Dynamic'"
@@ -23,6 +27,10 @@
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKLeadX'"
 		},
+		"LNKUE_Webengage_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKUE_Webengage'"
+		},
 		"LNKYPAzure_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure'"
@@ -30,6 +38,10 @@
 		"LNKYPAzure_Unencrypt_connectionString": {
 			"type": "secureString",
 			"metadata": "Secure string for 'connectionString' of 'LNKYPAzure_Unencrypt'"
+		},
+		"LNKYPUserAnalysis_connectionString": {
+			"type": "secureString",
+			"metadata": "Secure string for 'connectionString' of 'LNKYPUserAnalysis'"
 		},
 		"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
 			"type": "string",
@@ -65,6 +77,9 @@
 					"LNKCRM_Dynamic_connectionString": {
 						"value": "[parameters('LNKCRM_Dynamic_connectionString')]"
 					},
+					"LNKDW_Dynamic_connectionString": {
+						"value": "[parameters('LNKDW_Dynamic_connectionString')]"
+					},
 					"LNKLSAds_Dynamic_connectionString": {
 						"value": "[parameters('LNKLSAds_Dynamic_connectionString')]"
 					},
@@ -74,11 +89,17 @@
 					"LNKLeadX_connectionString": {
 						"value": "[parameters('LNKLeadX_connectionString')]"
 					},
+					"LNKUE_Webengage_connectionString": {
+						"value": "[parameters('LNKUE_Webengage_connectionString')]"
+					},
 					"LNKYPAzure_connectionString": {
 						"value": "[parameters('LNKYPAzure_connectionString')]"
 					},
 					"LNKYPAzure_Unencrypt_connectionString": {
 						"value": "[parameters('LNKYPAzure_Unencrypt_connectionString')]"
+					},
+					"LNKYPUserAnalysis_connectionString": {
+						"value": "[parameters('LNKYPUserAnalysis_connectionString')]"
 					},
 					"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
 						"value": "[parameters('LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url')]"
@@ -105,6 +126,26 @@
 			},
 			"dependsOn": [
 				"[resourceId('Microsoft.Resources/deployments', 'SulDataFactory_ArmTemplate_0')]"
+			]
+		},
+		{
+			"name": "SulDataFactory_ArmTemplate_2",
+			"type": "Microsoft.Resources/deployments",
+			"apiVersion": "2018-02-01",
+			"properties": {
+				"mode": "incremental",
+				"templateLink": {
+					"uri": "[concat(parameters('containerUri'), '/ArmTemplate_2.json', parameters('containerSasToken'))]",
+					"contentVersion": "1.0.0.0"
+				},
+				"parameters": {
+					"factoryName": {
+						"value": "[parameters('factoryName')]"
+					}
+				}
+			},
+			"dependsOn": [
+				"[resourceId('Microsoft.Resources/deployments', 'SulDataFactory_ArmTemplate_1')]"
 			]
 		}
 	]

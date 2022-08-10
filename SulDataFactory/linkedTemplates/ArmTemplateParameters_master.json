@@ -8,6 +8,9 @@
 		"LNKCRM_Dynamic_connectionString": {
 			"value": ""
 		},
+		"LNKDW_Dynamic_connectionString": {
+			"value": ""
+		},
 		"LNKLSAds_Dynamic_connectionString": {
 			"value": ""
 		},
@@ -17,10 +20,16 @@
 		"LNKLeadX_connectionString": {
 			"value": ""
 		},
+		"LNKUE_Webengage_connectionString": {
+			"value": ""
+		},
 		"LNKYPAzure_connectionString": {
 			"value": ""
 		},
 		"LNKYPAzure_Unencrypt_connectionString": {
+			"value": ""
+		},
+		"LNKYPUserAnalysis_connectionString": {
 			"value": ""
 		},
 		"LNK_RestAPI_RedisBusinessInfo_properties_typeProperties_url": {
