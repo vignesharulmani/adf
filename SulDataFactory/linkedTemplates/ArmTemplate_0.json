@@ -248,8 +248,7 @@
 						"frequency": "Day",
 						"interval": 1,
 						"startTime": "2022-03-29T07:15:00",
-						"timeZone": "India Standard Time",
-						"schedule": {}
+						"timeZone": "India Standard Time"
 					}
 				}
 			},

@@ -1585,123 +1585,6 @@
 			]
 		},
 		{
-			"name": "[concat(parameters('factoryName'), '/Process Relataed Needs')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "Get Relataed Needs",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:05:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderStoredProcedureName": "[[dbo].[prc_get_relatedneeds]",
-								"queryTimeout": "00:05:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "DS_Dynamic_UE_Webengage",
-								"type": "DatasetReference",
-								"parameters": {
-									"ds_db_param": "webengage"
-								}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "Get Users",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:05:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "SqlServerSource",
-								"sqlReaderStoredProcedureName": "[[dbo].[prc_get_uniqueuserleads]",
-								"storedProcedureParameters": {
-									"daysofinterval": {
-										"type": "Int32",
-										"value": {
-											"value": "3",
-											"type": "Expression"
-										}
-									},
-									"needid": {
-										"type": "Int32",
-										"value": {
-											"value": "62300",
-											"type": "Expression"
-										}
-									}
-								},
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "DS_YPUserAnalysis",
-								"type": "DatasetReference",
-								"parameters": {}
-							}
-						}
-					},
-					{
-						"name": "var_relatedneeds",
-						"type": "SetVariable",
-						"dependsOn": [
-							{
-								"activity": "Get Relataed Needs",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "vRelatedNeeds",
-							"value": {
-								"value": "@activity('Get Relataed Needs').output.value",
-								"type": "Expression"
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"vRelatedNeeds": {
-						"type": "Array"
-					}
-				},
-				"folder": {
-					"name": "UE"
-				},
-				"annotations": []
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_UE_Webengage')]",
-				"[concat(variables('factoryId'), '/datasets/DS_YPUserAnalysis')]"
-			]
-		},
-		{
 			"name": "[concat(parameters('factoryName'), '/ReviewCountStats')]",
 			"type": "Microsoft.DataFactory/factories/pipelines",
 			"apiVersion": "2018-06-01",
@@ -2601,8 +2484,7 @@
 						"frequency": "Day",
 						"interval": 1,
 						"startTime": "2022-03-29T07:15:00",
-						"timeZone": "India Standard Time",
-						"schedule": {}
+						"timeZone": "India Standard Time"
 					}
 				}
 			},
