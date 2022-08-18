@@ -10,7 +10,7 @@
 				"typeProperties": {
 					"variableName": "vInsightDate",
 					"value": {
-						"value": "@adddays(utcnow(),-2)",
+						"value": "@adddays(utcnow(),-1)",
 						"type": "Expression"
 					}
 				}
