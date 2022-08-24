@@ -13,6 +13,46 @@
 	},
 	"resources": [
 		{
+			"name": "[concat(parameters('factoryName'), '/SyncModifiedBusinessToRedis')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"description": "This PL is used to sync modified business to redis via proc - prc_sync_modifiedbusiness_redis",
+				"activities": [
+					{
+						"name": "Sync Business To Redis",
+						"description": "This component is used to populate the data in the table - pushbusinesstoredis",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:10:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[prc_sync_modifiedbusiness_redis]"
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKYPAzure",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "LS/Resolver"
+				},
+				"annotations": []
+			},
+			"dependsOn": []
+		},
+		{
 			"name": "[concat(parameters('factoryName'), '/DS_Dynamic_CRM')]",
 			"type": "Microsoft.DataFactory/factories/datasets",
 			"apiVersion": "2018-06-01",
@@ -482,7 +522,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-18T13:20:54Z"
@@ -618,7 +658,7 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-24T10:24:43Z"
@@ -782,7 +822,7 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-12T13:29:33Z"
@@ -990,7 +1030,7 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-22T07:00:20Z"
@@ -1200,13 +1240,41 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_YP')]"
 			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_0000')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "ResetSurveyFeedback",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-08-24T23:59:59",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": []
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/tr_0200_1000_1800')]",
@@ -1277,7 +1345,9 @@
 					}
 				}
 			},
-			"dependsOn": []
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/SyncModifiedBusinessToRedis')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/TestRestAPI')]",
@@ -1372,233 +1442,13 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-24T10:24:45Z"
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/pipelines/LoadBVNMetricsSpecificDate')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/MigrateBVNCalls')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "var_CallDate",
-						"type": "SetVariable",
-						"dependsOn": [],
-						"userProperties": [],
-						"typeProperties": {
-							"variableName": "VCallDate",
-							"value": {
-								"value": "@adddays(utcnow(),-4)",
-								"type": "Expression"
-							}
-						}
-					},
-					{
-						"name": "MigrateBVNCallsSpecficDate",
-						"type": "ExecutePipeline",
-						"dependsOn": [
-							{
-								"activity": "var_CallDate",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"pipeline": {
-								"referenceName": "MigrateBVNCallsSpecificDate",
-								"type": "PipelineReference"
-							},
-							"waitOnCompletion": true,
-							"parameters": {
-								"CallDate": {
-									"value": "@variables('VCallDate')",
-									"type": "Expression"
-								}
-							}
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"variables": {
-					"VCallDate": {
-						"type": "String"
-					}
-				},
-				"folder": {
-					"name": "YP/ProManage"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-01-22T05:22:24Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/pipelines/MigrateBVNCallsSpecificDate')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/pl_testrestapi')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"activities": [
-					{
-						"name": "googlebusinesses",
-						"type": "Lookup",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "7.00:00:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"source": {
-								"type": "AzureSqlSource",
-								"sqlReaderQuery": "select contentid,businessid,insightdate from googlebusinesses (nolock)\nwhere isprocessed = 0",
-								"queryTimeout": "02:00:00",
-								"partitionOption": "None"
-							},
-							"dataset": {
-								"referenceName": "DS_Dynamic_YP",
-								"type": "DatasetReference",
-								"parameters": {}
-							},
-							"firstRowOnly": false
-						}
-					},
-					{
-						"name": "MetricsFromGoogle",
-						"type": "ForEach",
-						"dependsOn": [
-							{
-								"activity": "googlebusinesses",
-								"dependencyConditions": [
-									"Succeeded"
-								]
-							}
-						],
-						"userProperties": [],
-						"typeProperties": {
-							"items": {
-								"value": "@activity('googlebusinesses').output.value",
-								"type": "Expression"
-							},
-							"isSequential": true,
-							"activities": [
-								{
-									"name": "DF_TestRestAPI",
-									"type": "ExecuteDataFlow",
-									"dependsOn": [],
-									"policy": {
-										"timeout": "1.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"dataflow": {
-											"referenceName": "TestRestAPI",
-											"type": "DataFlowReference",
-											"parameters": {
-												"BusinessId": {
-													"value": "@item().businessid",
-													"type": "Expression"
-												}
-											},
-											"datasetParameters": {
-												"RedisBusinessInfo": {
-													"BusinessId": {
-														"value": "@item().businessid",
-														"type": "Expression"
-													}
-												},
-												"CollectMetrics": {}
-											}
-										},
-										"staging": {},
-										"compute": {
-											"coreCount": 8,
-											"computeType": "General"
-										},
-										"traceLevel": "Fine"
-									}
-								},
-								{
-									"name": "UpdateBusiness",
-									"type": "SqlServerStoredProcedure",
-									"dependsOn": [
-										{
-											"activity": "DF_TestRestAPI",
-											"dependencyConditions": [
-												"Succeeded"
-											]
-										}
-									],
-									"policy": {
-										"timeout": "7.00:00:00",
-										"retry": 0,
-										"retryIntervalInSeconds": 30,
-										"secureOutput": false,
-										"secureInput": false
-									},
-									"userProperties": [],
-									"typeProperties": {
-										"storedProcedureName": "[[dbo].[prc_update_googlebusinesses]",
-										"storedProcedureParameters": {
-											"comments": {
-												"value": "Data Collected",
-												"type": "String"
-											},
-											"contentid": {
-												"value": {
-													"value": "@item().contentid",
-													"type": "Expression"
-												},
-												"type": "Int32"
-											},
-											"isprocessed": {
-												"value": "1",
-												"type": "Byte"
-											}
-										}
-									},
-									"linkedServiceName": {
-										"referenceName": "LNKYPAzure",
-										"type": "LinkedServiceReference"
-									}
-								}
-							]
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "YP/ProManage"
-				},
-				"annotations": [],
-				"lastPublishTime": "2022-01-07T10:09:13Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/datasets/DS_Dynamic_YP')]",
-				"[concat(variables('factoryId'), '/dataflows/TestRestAPI')]"
 			]
 		}
 	]

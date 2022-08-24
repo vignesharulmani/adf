@@ -686,7 +686,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": []
 			},
@@ -728,7 +728,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/Resolver"
+					"name": "LS/Resolver"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-06T12:05:16Z"
@@ -804,7 +804,7 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-24T07:02:53Z"
@@ -847,7 +847,47 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ResetSurveyFeedback')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "prc_reset_SurveyFeedbackCount",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:05:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[prc_reset_SurveyFeedbackCount]"
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKYPAzure",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "LS/SQLJobs"
 				},
 				"annotations": []
 			},
@@ -889,52 +929,10 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/Stats"
+					"name": "LS/Stats"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-06T12:11:17Z"
-			},
-			"dependsOn": [
-				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
-			]
-		},
-		{
-			"name": "[concat(parameters('factoryName'), '/SyncModifiedBusinessToRedis')]",
-			"type": "Microsoft.DataFactory/factories/pipelines",
-			"apiVersion": "2018-06-01",
-			"properties": {
-				"description": "This PL is used to sync modified business to redis via proc - prc_sync_modifiedbusiness_redis",
-				"activities": [
-					{
-						"name": "Sync Business To Redis",
-						"description": "This component is used to populate the data in the table - pushbusinesstoredis",
-						"type": "SqlServerStoredProcedure",
-						"dependsOn": [],
-						"policy": {
-							"timeout": "0.00:10:00",
-							"retry": 0,
-							"retryIntervalInSeconds": 30,
-							"secureOutput": false,
-							"secureInput": false
-						},
-						"userProperties": [],
-						"typeProperties": {
-							"storedProcedureName": "[[dbo].[prc_sync_modifiedbusiness_redis]"
-						},
-						"linkedServiceName": {
-							"referenceName": "LNKYPAzure",
-							"type": "LinkedServiceReference"
-						}
-					}
-				],
-				"policy": {
-					"elapsedTimeMetric": {},
-					"cancelAfter": {}
-				},
-				"folder": {
-					"name": "YP/Resolver"
-				},
-				"annotations": []
 			},
 			"dependsOn": [
 				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"

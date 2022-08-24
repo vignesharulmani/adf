@@ -673,7 +673,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": []
 			},
@@ -772,7 +772,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-18T13:20:54Z"
@@ -816,7 +816,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/Resolver"
+					"name": "LS/Resolver"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-06T12:05:16Z"
@@ -892,7 +892,7 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-24T07:02:53Z"
@@ -957,7 +957,7 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-24T10:24:45Z"
@@ -1093,7 +1093,7 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-24T10:24:43Z"
@@ -1258,7 +1258,7 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-12T13:29:33Z"
@@ -1324,7 +1324,7 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-22T05:22:24Z"
@@ -1532,7 +1532,7 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-22T07:00:20Z"
@@ -1576,7 +1576,47 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
+				},
+				"annotations": []
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/linkedServices/LNKYPAzure')]"
+			]
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/ResetSurveyFeedback')]",
+			"type": "Microsoft.DataFactory/factories/pipelines",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"activities": [
+					{
+						"name": "prc_reset_SurveyFeedbackCount",
+						"type": "SqlServerStoredProcedure",
+						"dependsOn": [],
+						"policy": {
+							"timeout": "0.00:05:00",
+							"retry": 0,
+							"retryIntervalInSeconds": 30,
+							"secureOutput": false,
+							"secureInput": false
+						},
+						"userProperties": [],
+						"typeProperties": {
+							"storedProcedureName": "[[dbo].[prc_reset_SurveyFeedbackCount]"
+						},
+						"linkedServiceName": {
+							"referenceName": "LNKYPAzure",
+							"type": "LinkedServiceReference"
+						}
+					}
+				],
+				"policy": {
+					"elapsedTimeMetric": {},
+					"cancelAfter": {}
+				},
+				"folder": {
+					"name": "LS/SQLJobs"
 				},
 				"annotations": []
 			},
@@ -1618,7 +1658,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/Stats"
+					"name": "LS/Stats"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-06T12:11:17Z"
@@ -1661,7 +1701,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/Resolver"
+					"name": "LS/Resolver"
 				},
 				"annotations": []
 			},
@@ -1870,7 +1910,7 @@
 					}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": []
 			},
@@ -2024,7 +2064,7 @@
 					"cancelAfter": {}
 				},
 				"folder": {
-					"name": "YP/ProManage"
+					"name": "LS/ProManage"
 				},
 				"annotations": [],
 				"lastPublishTime": "2022-01-07T10:09:13Z"
@@ -2402,6 +2442,36 @@
 				}
 			},
 			"dependsOn": []
+		},
+		{
+			"name": "[concat(parameters('factoryName'), '/tr_0000')]",
+			"type": "Microsoft.DataFactory/factories/triggers",
+			"apiVersion": "2018-06-01",
+			"properties": {
+				"annotations": [],
+				"runtimeState": "Started",
+				"pipelines": [
+					{
+						"pipelineReference": {
+							"referenceName": "ResetSurveyFeedback",
+							"type": "PipelineReference"
+						},
+						"parameters": {}
+					}
+				],
+				"type": "ScheduleTrigger",
+				"typeProperties": {
+					"recurrence": {
+						"frequency": "Day",
+						"interval": 1,
+						"startTime": "2022-08-24T23:59:59",
+						"timeZone": "India Standard Time"
+					}
+				}
+			},
+			"dependsOn": [
+				"[concat(variables('factoryId'), '/pipelines/ResetSurveyFeedback')]"
+			]
 		},
 		{
 			"name": "[concat(parameters('factoryName'), '/tr_0200_1000_1800')]",
