@@ -1,0 +1,17 @@
+{
+	"name": "tr_0000",
+	"properties": {
+		"annotations": [],
+		"runtimeState": "Started",
+		"pipelines": [],
+		"type": "ScheduleTrigger",
+		"typeProperties": {
+			"recurrence": {
+				"frequency": "Day",
+				"interval": 1,
+				"startTime": "2022-08-24T23:59:00",
+				"timeZone": "India Standard Time"
+			}
+		}
+	}
+}
