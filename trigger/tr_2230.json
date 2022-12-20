@@ -15,12 +15,6 @@
 					"referenceName": "BusinessProfileHealthHistory",
 					"type": "PipelineReference"
 				}
-			},
-			{
-				"pipelineReference": {
-					"referenceName": "BusinessPostsHistory",
-					"type": "PipelineReference"
-				}
 			}
 		],
 		"type": "ScheduleTrigger",
