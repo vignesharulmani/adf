@@ -1,0 +1,44 @@
+{
+	"name": "dataflow1",
+	"properties": {
+		"type": "MappingDataFlow",
+		"typeProperties": {
+			"sources": [
+				{
+					"dataset": {
+						"referenceName": "DS_Dynamic_YP",
+						"type": "DatasetReference"
+					},
+					"name": "SourceMetrics"
+				}
+			],
+			"sinks": [],
+			"transformations": [
+				{
+					"name": "PivotMetrics"
+				}
+			],
+			"scriptLines": [
+				"source(output(",
+				"          businessid as integer,",
+				"          metricid as short,",
+				"          metricvalue as integer,",
+				"          insightdate as date,",
+				"          businessid_insightdate as string",
+				"     ),",
+				"     allowSchemaDrift: true,",
+				"     validateSchema: false,",
+				"     isolationLevel: 'READ_UNCOMMITTED',",
+				"     procedureName: 'tmp_adf_prc_get_businessmetrics',",
+				"     schemaName: 'dbo',",
+				"     resultSet: true,",
+				"     format: 'procedure') ~> SourceMetrics",
+				"SourceMetrics pivot(groupBy(businessid_insightdate),",
+				"     pivotBy(metricid),",
+				"     MetricValue = max(metricvalue),",
+				"     columnNaming: '$N$V',",
+				"     lateral: true) ~> PivotMetrics"
+			]
+		}
+	}
+}
